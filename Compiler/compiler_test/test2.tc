@@ -1,0 +1,27 @@
+/*
+	* Recursive function Fibonacci
+	* second test case [right]
+*/
+
+int Fibonacci(int n);
+int main(){
+	int number;
+	in >> number;
+	int i = 1;
+	int result = 1;
+	// output the result
+	for(i = 1; i < number; i = i + 1){
+		result =  Fibonacci(i)
+		out << result << "\n";
+	}
+	return 0;
+}
+
+int Fibonacci(int n){
+	if(n == 1 || n == 0){
+		return 1;
+	}
+	else{
+		return Fibonacci(n - 1) + Fibonacci(n - 2);
+	} 
+}

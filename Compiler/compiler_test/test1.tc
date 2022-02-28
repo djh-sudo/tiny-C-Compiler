@@ -1,0 +1,11 @@
+/*
+	* just output something
+	* first test case [right]
+*/
+int main(){
+	int a;
+	in >> a;
+	out << "hello first test program\n";
+	out << a;
+	return 0;
+}

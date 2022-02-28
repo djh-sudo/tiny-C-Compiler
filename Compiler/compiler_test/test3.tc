@@ -1,0 +1,16 @@
+/*
+	* Annotation test
+	* test case 3 [right]
+*/
+
+int main(){
+	/* [right] */
+	// /**/ [right]
+	// /* .... */
+	/*
+	   * author : djh-sudo 
+	   * date 2022/2/28
+	   * time 19:13
+	*/
+	return 0;
+}

@@ -1,0 +1,9 @@
+/*
+	* Annotation test
+	* test case 4 [wrong]
+*/
+
+int main(){
+	/* *
+	return 0;
+}

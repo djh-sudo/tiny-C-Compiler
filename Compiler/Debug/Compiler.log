@@ -1,0 +1,6 @@
+﻿  Lexer.cpp
+E:\B18080516\tiny-C-Compiler\Compiler\Lexer.cpp(22,1): warning C4996:  'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+E:\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(208): message :  参见“fopen”的声明
+E:\B18080516\tiny-C-Compiler\Compiler\Lexer.cpp(41,1): warning C4996:  'fscanf': This function or variable may be unsafe. Consider using fscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+E:\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(1197): message :  参见“fscanf”的声明
+  Compiler.vcxproj -> E:\B18080516\tiny-C-Compiler\Compiler\Debug\Compiler.exe
