@@ -1,0 +1,10 @@
+/*
+	* test case 6
+	* string and char test [wrong]
+	* char missing the '
+*/
+int main(){
+	char a = 'a;
+	out << a;
+	return 0;
+}

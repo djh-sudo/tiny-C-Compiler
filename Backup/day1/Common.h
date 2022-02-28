@@ -33,7 +33,8 @@ enum symbol {
 // 
 enum error_c {
 	// ´Ê·¨´íÎó
-	char_wrong,string_wrong, nnotation_wrong,line2long,str2long,num2long,id2long,expec_char,warn_escape
+	char_wrong,string_wrong, nnotation_wrong,line2long,
+	str2long,num2long,id2long,expec_char,warn_escape,
 	// Óï·¨´íÎó
 
 	//ÓïÒå´íÎó

@@ -1,0 +1,10 @@
+/*
+	* test case 5
+	* string and char test [wrong]
+	* one line is too long!
+*/
+int main(){
+	string a = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+	out << a;
+	return 0;
+}

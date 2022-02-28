@@ -1,0 +1,10 @@
+/*
+	* test case 6
+	* string and char test [wrong]
+	* string missing the "
+*/
+int main(){
+	string a = "aaaaa;
+	out << a;
+	return 0;
+}

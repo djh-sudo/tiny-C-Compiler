@@ -278,6 +278,10 @@ bool Lexer::GetSymbol() {
 								lexical_error(warn_escape);
 							}
 						}
+						else if (current_char == '\n') {
+							lexical_error(string_wrong);
+							return false;
+						}
 						else {
 							str[str_count] = current_char;
 						}
