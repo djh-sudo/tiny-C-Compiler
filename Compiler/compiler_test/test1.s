@@ -1,0 +1,121 @@
+section .text
+main:
+	push ebp
+	mov ebp,esp
+	mov ebx,[@s_esp]
+	mov [@s_esp],esp
+	mov esp,ebx
+	mov ebx,[@s_ebp]
+	push ebx
+	mov [@s_ebp],esp
+	mov ebx,[@s_esp]
+	mov [@s_esp],esp
+	mov esp,ebx
+	push 0
+	mov ecx,@buffer
+	mov edx,255
+	mov ebx,0
+	mov eax,3
+	int 128
+	call @procBuf
+	mov [ebp-4],eax
+	push 1
+	push -1
+	mov eax,[@s_esp]
+	mov [@s_esp],esp
+	mov esp,eax
+	mov eax,@str_1_len
+	sub esp,1
+	mov [esp],al
+	mov [ebp-12],esp
+	cmp eax,0
+	je @lab_cpystr2_exit_4
+	mov ecx,@str_1_len
+	dec ecx
+	mov esi,@str_1
+@lab_cpystr2_3:
+	cmp ecx,-1
+	je @lab_cpystr2_exit_4
+	mov dl,[esi+ecx]
+	sub esp,1
+	mov [esp],dl
+	dec ecx
+	jmp @lab_cpystr2_3
+@lab_cpystr2_exit_4:
+	mov eax,[@s_esp]
+	mov [@s_esp],esp
+	mov esp,eax
+	mov ecx,[ebp-12]
+	mov edx,0
+	mov dl,[ecx]
+	sub ecx,edx
+	mov ebx,1
+	mov eax,4
+	int 128
+	push -1
+	mov eax,[@s_esp]
+	mov [@s_esp],esp
+	mov esp,eax
+	mov eax,[ebp-4]
+	sub esp,1
+	mov ecx,0
+	mov [esp],cl
+	mov esi,esp
+	mov [ebp-16],esp
+	mov edi,0
+	cmp eax,0
+	jge @lab_numsign2_exit_11
+@lab_numsign2_10:
+	neg eax
+	mov edi,1
+@lab_numsign2_exit_11:
+	mov ebx,10
+@lab_num2str2_8:
+	mov edx,0
+	idiv ebx
+	mov cl,[esi]
+	inc cl
+	mov [esi],cl
+	sub esp,1
+	add dl,48
+	mov [esp],dl
+	cmp eax,0
+	jne @lab_num2str2_8
+	cmp edi,0
+	je @lab_num2str2_exit_9
+	sub esp,1
+	mov ecx,45
+	mov [esp],cl
+	mov cl,[esi]
+	inc cl
+	mov [esi],cl
+@lab_num2str2_exit_9:
+	mov eax,[@s_esp]
+	mov [@s_esp],esp
+	mov esp,eax
+	mov ecx,[ebp-16]
+	mov edx,0
+	mov dl,[ecx]
+	sub ecx,edx
+	mov ebx,1
+	mov eax,4
+	int 128
+	push 0
+	mov eax,[ebp-20]
+	mov ebx,[@s_ebp]
+	mov [@s_esp],ebx
+	mov ebx,[@s_esp]
+	mov [@s_esp],esp
+	mov esp,ebx
+	pop ebx
+	mov [@s_ebp],ebx
+	mov ebx,[@s_esp]
+	mov [@s_esp],esp
+	mov esp,ebx
+	mov esp,ebp
+	pop ebp
+	ret
+section .data
+	@str_1 db "hello first test program",10
+	@str_1_len equ 25
+section .bss

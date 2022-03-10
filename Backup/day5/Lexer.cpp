@@ -18,7 +18,7 @@ Lexer::Lexer() {
 	this->error_number = 0;
 }
 
-bool Lexer::Init(const char* file_name) {
+bool Lexer::init(const char* file_name) {
 	fin = fopen(file_name, "r");
 	if (fin != nullptr) {
 		cout << "file [" << file_name << "] open successfully!" << endl;
@@ -487,8 +487,4 @@ int Lexer::get_error_number() {
 
 void Lexer::set_show_flag(bool show_flag) {
 	this->show_flag = show_flag;
-}
-
-Lexer::~Lexer() {
-	over();
 }

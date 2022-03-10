@@ -5,7 +5,6 @@
 
 
 #define GETCHAR if(!Getchar()) return false;
-
 static char symbol_name[][ID_LEN]{
 	// 空，标识符，异常，数字
 	"null", "ident", "excep", "number",
@@ -59,9 +58,9 @@ private:
 
 public:
 	explicit Lexer();
-	~Lexer();
+	~Lexer() = default;
 	// basic API
-	bool Init(const char* file_name);
+	bool init(const char* file_name);
 	void over();
 	bool Getchar();
 	bool GetSymbol();

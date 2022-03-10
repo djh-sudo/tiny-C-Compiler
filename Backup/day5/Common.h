@@ -8,7 +8,7 @@ using namespace std;
 #define MAX_LEN 80
 #define RESERVED_NUMBER 13
 #define GLOBAL_STRING -2
-#define DYNAMIC_STRING -1
+#define TEMP_STRING -1
 
 #define al "al"
 #define bl "bl"
@@ -20,15 +20,10 @@ using namespace std;
 #define edx "edx"
 #define edi "edi"
 #define esi "esi"
-#define esp "esp"
-#define ebp "ebp"
-
-#define ESP "@s_esp"
-#define EBP "@s_ebp"
-#define STACK "@s_stack"
-#define BASE "@s_base"
-#define STR2LONG "@str2long"
-#define PROC_BUF "@procBuf"
+#define ESP "@_esp"
+#define EBP "@_ebp"
+#define STACK "@stack"
+#define BASE "@base"
 #define STR2LONG_DATA_LEN "@str2long_data_len"
 #define STR2LONG_DATA "@dtr2long_data"
 #define BUFFER "@buffer"
@@ -36,15 +31,9 @@ using namespace std;
 #define CAL_BUF_LEN "@cal_buf_len"
 #define CAL_BUF_LEN_EXIT "@cal_buf_len_exit"
 #define _START "_start"
-
 #define __(X) string("[") + X + "]"
 #define _(X,Y) string("[") + X + "+" + Y + "]"
-#define _ebp(X) string("[") + ebp + "+" + to_string(X) + "]" 
-#define __ebp(X) string("[") + ebp + to_string(X) + "]"
-#define WHILE_LOOP(X) string("@while_") + X + "_loop"
-#define WHILE_EXIT(X) string("@while_") + X + "_exit"
-#define IF_MIDDLE(X) string("@if_") + X + "_middle"
-#define IF_END(X) string("@if_") + X + "_end"
+
 // 40个枚举符号
 enum symbol {
 	// 空，标识符，异常，数字
@@ -81,11 +70,6 @@ enum error_c {
 	op_lost, op_wrong, expr_lost, expr_wrong,
 
 	//语义错误
-	void_non_calc,str_non_add, void_non_assi, type_assi, void_non_in, 
-	var_redef, var_undef, fun_redef, fun_def_error, fun_undef,
-	real_args_error, para_redef, local_redef,
-	break_non_in_while, continue_non_in_while,
-	str_non_cond, void_non_cond, ret_type_error,
-
+	void_non_calc,str_non_add,
 
 };
