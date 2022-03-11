@@ -62,7 +62,8 @@ public:
 	void FlushArgs();
 	void PopLocalVars(int var_number);
 	bool equal(FunRecord& function);
-	VarRecord* CreateTmpVar(symbol type, bool has_val, int& var_number, string str = "", int num = -1);
+	VarRecord* CreateTmpVar(symbol type, bool has_val, int& var_number, 
+		                    string str="", int num=-1);
 	
 	// get and set API
 	symbol get_type();

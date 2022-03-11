@@ -94,7 +94,7 @@ FunRecord::FunRecord(const FunRecord& src) {
 	this->name = src.name;
 	this->arguments = new vector<symbol>();
 	this->arguments->clear();
-	for (int i = 0; i < arguments->size(); i++) {
+	for (int i = 0; i < src.arguments->size(); i++) {
 		this->arguments->push_back((*(src.arguments))[i]);
 	}
 	this->local_vars = nullptr;
@@ -112,8 +112,13 @@ void FunRecord::Init(symbol dec_type, string name) {
 }
 
 void FunRecord::AddArgs(VarRecord var) {
-	this->arguments->push_back(var.get_type());
-	this->PushLocalVar(var);
+	if (arguments) {
+		this->arguments->push_back(var.get_type());
+		this->PushLocalVar(var);
+	}
+	else {
+		// assert
+	}
 }
 
 
@@ -162,7 +167,7 @@ void FunRecord::FlushArgs() {
 			// ebp + 4 * count + ret_addr
 			p->set_local_addr(4 * (i + 2));
 			if (p->get_type() == rev_string) {
-				p->set_value(GLOBAL_STRING);
+				p->set_value(DYNAMIC_STRING);
 			}
 			// table add vars
 			VarTable::AddVar(p);
@@ -222,7 +227,8 @@ bool FunRecord::equal(FunRecord& function) {
 		    name == function.get_name());
 }
 
-VarRecord* FunRecord::CreateTmpVar(symbol type, bool has_val, int& var_number, string str, int num) {
+VarRecord* FunRecord::CreateTmpVar(symbol type, bool has_val, int& var_number, 
+	                               string str, int num) {
 	VarRecord* tmp = new VarRecord();
 	switch (type) {
 		case rev_int:{
@@ -415,9 +421,8 @@ void VarTable::AddFun(FunRecord& fun) {
 		FunRecord* p = fun_map[fun.get_name()];
 		if (p->equal(fun)) {
 			if (fun.get_defined()) {
-				if (fun.get_defined()) {
-					Generator::SemanticError(fun_redef);
-					// 
+				if (p->get_defined()) {
+					Generator::SemanticError(fun_redef); 
 					return;
 				}
 				else {
@@ -430,14 +435,23 @@ void VarTable::AddFun(FunRecord& fun) {
 		}
 		else {
 			// 
-			Generator::SemanticError(fun_def_error);
+			FunRecord* p = new FunRecord(fun);
+			delete fun_map[fun.get_name()];
+			fun_map[fun.get_name()] = p;
+			if (fun.get_defined()) {
+				fun.FlushArgs();
+				Generator::SemanticError(fun_def_error);
+			}
+			else {
+				Generator::SemanticError(fun_dec_error);
+			}
 		}
 	}
 
 }
 
 void VarTable::AddRealArgs(VarRecord* arg, int& var_number, FunRecord&fun) {
-	if (syntax_error)return;
+	if (syntax_error) return;
 	if (arg->get_type() == rev_string) {
 		VarRecord tmp;
 		string name = "";

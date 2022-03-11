@@ -34,7 +34,7 @@ string Generator::GenerateName(string header, symbol type, string name) {
 	return return_name;
 }
 
-VarRecord* Generator::GenerateExp(VarRecord* f1, symbol op, VarRecord* f2, int& var_number,FunRecord& fun) {
+VarRecord* Generator::GenerateExp(VarRecord* f1, symbol op, VarRecord* f2, int& var_number, FunRecord& fun) {
 	if (error) {
 		return nullptr;
 	}
@@ -78,6 +78,8 @@ VarRecord* Generator::GenerateExp(VarRecord* f1, symbol op, VarRecord* f2, int& 
 					else {
 						mov(ebx, _ebp(f2->get_local_addr()));
 					}
+					mov(eax, 0);
+					mov(al, __(ebx));
 					subi(esp, 1);
 					mov(__(esp), al);
 					mov(__ebp(tmp->get_local_addr()), esp);// 存入字符串的地址
@@ -257,7 +259,7 @@ VarRecord* Generator::GenerateExp(VarRecord* f1, symbol op, VarRecord* f2, int& 
 					je(lab_exit);
 					mov(ebx, __ebp(tmp->get_local_addr()));
 					mov(edx, 0);
-					mov(dl, eax);
+					mov(dl, __(ebx));
 					addi(edx, eax);
 					mov(__(ebx), dl);
 					mov(ecx, 0);
@@ -284,7 +286,7 @@ VarRecord* Generator::GenerateExp(VarRecord* f1, symbol op, VarRecord* f2, int& 
 					exchg_esp();
 
 				}
-				else if(f1->get_local_addr() > 0) {
+				else if(f1->get_value() > 0) {
 					// 常量 string
 					exchg_esp();
 					mov(eax, ("@str_" + to_string(f1->get_value()) + "_len"));
@@ -313,7 +315,7 @@ VarRecord* Generator::GenerateExp(VarRecord* f1, symbol op, VarRecord* f2, int& 
 					label(lab_exit);
 					exchg_esp();
 				}
-				else if (f1->get_local_addr() == GLOBAL_STRING) {
+				else if (f1->get_value() == GLOBAL_STRING) {
 					exchg_esp();
 					mov(eax, 0);
 					if (!buffer_flag) {
@@ -563,7 +565,7 @@ VarRecord* Generator::GenerateExp(VarRecord* f1, symbol op, VarRecord* f2, int& 
 	return tmp;
 }
 
-VarRecord* Generator::GenerateAssign(VarRecord* des, VarRecord* src, int& var_number,FunRecord& fun) {
+VarRecord* Generator::GenerateAssign(VarRecord* des, VarRecord* src, int& var_number, FunRecord& fun) {
 	if (error)
 		return nullptr;
 	if (des->get_type() == rev_void) {
@@ -586,7 +588,7 @@ VarRecord* Generator::GenerateAssign(VarRecord* des, VarRecord* src, int& var_nu
 			VarRecord tmp;
 			string temp_name = "";
 			tmp.Init(rev_string, temp_name);
-			src = GenerateExp(&tmp,add,src,var_number,fun);
+			src = GenerateExp(&tmp, add, src, var_number, fun);
 		}
 		if (des->get_value() == GLOBAL_STRING) {
 			string lab_loop = GenerateName("lab", null, "cpy2gstr");
@@ -1072,6 +1074,8 @@ void Generator::sys_write(int fd, string buf, string count) {
 }
 
 void Generator::SemanticError(error_c code) {
+	cout << "存在语义错误!" << code << endl;
+	exit(1);
 	switch (code)
 	{
 		case void_non_calc:

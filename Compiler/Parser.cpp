@@ -563,6 +563,7 @@ void Parser::Statement(int& var_number, int& level, int loop_id, int addr) {
 				SyntaxError(semicon_lost);
 				this->wait = true;
 			}
+			break;
 		}
 		default: {
 			SyntaxError(statement_wrong);
@@ -844,7 +845,7 @@ VarRecord* Parser::ExprTail(VarRecord* factor, int& var_number) {
 		symbol cmp = token; // 
 		VarRecord* factor2 = Expr(var_number);
 		// gen code 
-		return Generator::GenerateExp(factor, cmp, factor2, var_number,fun);
+		return Generator::GenerateExp(factor, cmp, factor2, var_number, fun);
 	}
 	else if (token == ident || token == number || token == chara ||
 	 	     token == strings || token == lparen) {
@@ -953,7 +954,7 @@ VarRecord* Parser::Factor(int& var_number) {
 		}
 		case strings: {
 			// fun
-			temp_p = fun.CreateTmpVar(rev_string, true, var_number, lexer.get_str());
+			temp_p = fun.CreateTmpVar(rev_string, true, var_number, lexer.get_str(), -1);
 			break;
 		}
 		default: {
@@ -996,6 +997,9 @@ VarRecord* Parser::FactorTail(VarRecord* factor, int& var_number) {
 }
 
 void Parser::SyntaxError(error_c error_code) {
+
+	cout << "error [syntax error at " << lexer.get_line_number() << "] " << error_code;
+	exit(1);
 	switch (error_code)
 	{
 		default:
