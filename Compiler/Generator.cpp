@@ -2,6 +2,7 @@
 
 bool Generator::buffer_flag = false;
 int Generator::id = 0;
+int Generator::line_number = 0;
 bool Generator::error = false;
 FILE* Generator::fout = nullptr;
 
@@ -1074,22 +1075,34 @@ void Generator::sys_write(int fd, string buf, string count) {
 }
 
 void Generator::SemanticError(error_c code) {
-	cout << "´æÔÚÓïÒå´íÎó!" << code << endl;
-	exit(1);
+	error = true;
+	cout << "[Semantic error at " << line_number << "] ";
 	switch (code)
 	{
-		case void_non_calc:
+		case void_non_calc:{
+			cout << "void type can't calculate!" << endl;
 			break;
-		case str_non_add:
+		}
+		case str_non_add: {
+			cout << "string type only use add(+) operator!" << endl;
 			break;
-		case void_non_assi:
+		}	
+		case void_non_assi: {
+			cout << "void type can't assign!" << endl;
 			break;
-		case type_assi:
+		}
+		case type_assi: {
+			cout << "des type not math src type!" << endl;
 			break;
-		case void_non_in:
+		}
+		case void_non_in: {
+			cout << "void type can't output!" << endl;
 			break;
-		default:
+		}
+		default: {
+			cout << "unknowned error" << endl;
 			break;
+		}
 	}
 }
 

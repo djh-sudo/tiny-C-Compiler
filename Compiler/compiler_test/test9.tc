@@ -1,0 +1,12 @@
+/*
+	* test case 9
+	* semantic error
+	* type assign error
+*/
+
+int main(){
+	int a;
+	a = "error string!";
+	out << a;
+	return 0;
+}

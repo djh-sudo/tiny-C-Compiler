@@ -1,6 +1,6 @@
 #include <iostream>
 #include "Lexer.h"
-
+#include "Generator.h"
 
 Lexer::Lexer() {
 	this->current_char = ' ';
@@ -36,6 +36,7 @@ bool Lexer::Getchar() {
 		position = 0;
 		line_length = 0;
 		line_number++;
+		Generator::line_number++;
 		current_char = ' ';
 		while (current_char != '\n') {
 			if (fscanf(fin, "%c", &current_char) == EOF) {
@@ -394,12 +395,13 @@ void Lexer::sp(int mode,string content) {
 }
 
 void Lexer::lexical_error(enum error_c code) {
+	Generator::error = true;
 	if (code == warn_escape) {
 		cout << "warning[lexical warning at" << line_number << "] escape failed with \\" << current_char << endl;
 		return;
 	}
 	error_number++;
-	cout << "error [lexical error at " << line_number << "] ";
+	cout << "[lexical error at " << line_number << "] ";
 	switch (code) {
 		case char_wrong:{
 			cout << "unrecognized char,miss ending '" << endl; 

@@ -1,8 +1,13 @@
+/*
+  * test case 8
+  * recursive test [right]
+  * right
+*/
 void hanoi(string a, string b, string c, int n);
 
 int main() {
         int n;
-        out << "输入盘子个数：";
+        out << "input number:";
         in >> n;
         hanoi("A", "B", "C", n);
         return 0;

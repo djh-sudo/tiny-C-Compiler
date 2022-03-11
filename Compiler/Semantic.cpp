@@ -19,13 +19,6 @@ VarRecord::VarRecord(const VarRecord& src) {
 	this->externed = src.externed;
 }
 
-void VarRecord::Copy(const VarRecord* src) {
-	this->type = src->type;
-	this->name = src->name;
-	this->value = src->value;
-	this->local_addr = src->local_addr;
-	this->externed = src->externed;
-}
 
 void VarRecord::Init(symbol dec_type, string name) {
 	this->type = dec_type;
@@ -595,5 +588,26 @@ void VarTable::over() {
 }
 
 void VarTable::clear() {
-	
+	unordered_map<string, VarRecord*>::iterator vi, vend;
+	vend = var_map.end();
+	for (vi = var_map.begin(); vi != vend; vi++) {
+		delete vi->second;
+	}
+	var_map.clear();
+	unordered_map<string, FunRecord*>::iterator fi, fend;
+	fend = fun_map.end();
+	for (fi = fun_map.begin(); fi != fend; fi++) {
+		delete fi->second;
+	}
+	fun_map.clear();
+	for (int i = 0; i < string_table.size(); i++) {
+		delete string_table[i];
+	}
+	string_table.clear();
+	parameter.clear();
+	parameter.shrink_to_fit();
+
+
+
+
 }

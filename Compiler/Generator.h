@@ -37,6 +37,8 @@ private:
 	static int id;
 public:
 	static bool error;
+	static int line_number;
+public:
 	static void over();
 	bool static Init(const char* file_name);
 	static string GenerateName(string header, symbol type, string name);

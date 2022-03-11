@@ -73,7 +73,8 @@ bool Parser::Match(symbol s) {
 void Parser::Program() {
 	if (!NextToken()) {
 		compiler_ok = true;
-		if (syntax_error == 0) {
+		if (syntax_error == 0 && lexer.get_error_number() == 0
+			&& !Generator::error) {
 			VarTable::over();
 			cout << "compiler successfully! " << endl;
 		}
@@ -438,6 +439,14 @@ void Parser::LocalDecTail(int& var_number, symbol type, int& level) {
 	}
 	else if (token == semicon) {
 		return;
+	}
+	else if (token == assign) {
+		// TODO.
+		string name = lexer.get_id();
+		this->wait = true;
+		IdentTail(name, var_number);
+		NextToken();
+		LocalDecTail(var_number, type, level);
 	}
 	else if (token == ident) {
 		SyntaxError(commma_lost);
@@ -997,11 +1006,121 @@ VarRecord* Parser::FactorTail(VarRecord* factor, int& var_number) {
 }
 
 void Parser::SyntaxError(error_c error_code) {
-
-	cout << "error [syntax error at " << lexer.get_line_number() << "] " << error_code;
-	exit(1);
+	if (lexer.get_error_number() != 0) return;
+	VarTable::syntax_error = true;
+	cout << "[syntax error at " << lexer.get_line_number() << "] ";
 	switch (error_code)
 	{
+		case semicon_lost: {
+			cout << "semicon(;) lost!" << endl;
+			break;
+		}
+		case commma_lost: {
+			cout << "comma(,) lost!" << endl;
+			break;
+		} 
+		case type_lost: {
+			cout << "type(var no type) lost!" << endl;
+			break;
+		} 
+		case ident_lost:{
+			cout << "ident name lost!" << endl;
+			break;
+		}
+		case semicon_wrong: {
+			cout << "semicon wrong!" << endl;
+			break;
+		} case type_wrong: {
+			cout << "type maybe wrong!" << endl;
+			break;
+		} 
+		case statement_wrong: {
+			cout << "not an effective statement" << endl;
+			break;
+		}
+		case lparen_wrong: {
+			cout << "lparen `(` wrong!" << endl;
+			break;
+		}
+		case para_lost: {
+			cout << "parameter lost!" << endl;
+			break;
+		}
+		case lparen_lost: {
+			cout << "lparen `(` maybe lost!" << endl;
+			break;
+		}
+		case rparen_lost: {
+			cout << "rparen `)` maybe lost!" << endl;
+			break;
+		}
+		case lbrac_lost: {
+			cout << "lbarc `{` maybe lost!" << endl;
+			break;
+		}
+		case rbrac_lost: {
+			cout << "rbarc `}` maybe lost!" << endl;
+			break;
+		}
+		case input_wrong: {
+			cout << "input stream (>>) wrong!" << endl;
+			break;
+		}
+		case non_input : {
+			cout << "no var be inputed!" << endl;
+			break;
+		}
+		case output_wrong: {
+			cout << "output stream (>>) wrong!" << endl;
+			break;
+		} 
+		case rparen_wrong: {
+			cout << "rparen `)` maybe wrong!" << endl;
+			break;
+		}
+		case else_lost: {
+			cout << "else (keyword) lost!" << endl;
+			break;
+		}
+		case else_wrong: {
+			cout << "else(keyword) maybe wrong!" << endl;
+			break;
+		}
+		case return_wrong: {
+			cout << "function return maybe wrong!" << endl;
+			break;
+		}
+		case idtail_lost: {
+			cout << "can't resolve the identifier!" << endl;
+			break;
+		}
+		case arg_lost: {
+			cout << "args maybe lost!" << endl;
+			break;
+		}
+		case arg_wrong: {
+			cout << "can't resolve the args!" << endl;
+			break;
+		} 
+		case arglist_wrong: {
+			cout << "no right separator in args!" << endl;
+			break;
+		}
+		case op_lost: {
+			cout << " operator maybe lost!" << endl;
+			break;
+		}
+		case op_wrong: {
+			cout << "operator maybe wrong!" << endl;
+			break;
+		} 
+		case expr_lost: {
+			cout << "expression maybe lost!" << endl;
+			break;
+		} case expr_wrong: {
+			cout << "not an effective expression" << endl;
+			break;
+		}
 		default:
 			break;
 	}
@@ -1014,4 +1133,5 @@ Parser::~Parser() {
 void Parser::end() {
 	Generator::section("section .bss");
 	Generator::over();
+	VarTable::clear();
 }
