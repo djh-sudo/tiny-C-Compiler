@@ -82,7 +82,6 @@ FunRecord::FunRecord() {
 	this->has_return = false;
 }
 
-//
 FunRecord::FunRecord(const FunRecord& src) {
 	this->type = src.type;
 	this->name = src.name;
