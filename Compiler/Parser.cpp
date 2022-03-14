@@ -81,6 +81,8 @@ void Parser::Program() {
 		else {
 			cout << "compiler failed!" << endl;
 		}
+		cout << "lexical error:" << lexer.get_error_number() << endl;
+		cout << "syntax error:" << syntax_error << endl;
 	}
 	else {
 		Dec();
@@ -295,7 +297,7 @@ void Parser::Parameter() {
 					fun.AddArgs(var);
 				}
 				else {
-					Generator::SemanticError(para_redef);
+					Generator::SemanticError(para_redef, name);
 				}
 			}
 			ParaList();
@@ -323,7 +325,7 @@ void Parser::ParaList() {
 				fun.AddArgs(var);
 			}
 			else {
-				Generator::SemanticError(para_redef);
+				Generator::SemanticError(para_redef, name);
 			}
 		}
 		ParaList();
@@ -407,7 +409,7 @@ void Parser::LocalDec(int& var_number, int& level) {
 			var_number++;
 		}
 		else {
-			Generator::SemanticError(local_redef);
+			Generator::SemanticError(local_redef, name);
 		}
 	}
 	NextToken();
@@ -465,6 +467,7 @@ void Parser::LocalDecTail(int& var_number, symbol type, int& level) {
 	}
 	else {
 		SyntaxError(semicon_wrong);
+		this->wait = true;
 		return;
 	}
 }
@@ -488,11 +491,12 @@ void Parser::Statement(int& var_number, int& level, int loop_id, int addr) {
 			if (token == ident || token == rev_while || token == rev_if ||
 				token == rev_return || token == rev_break || token == rev_continue ||
 				token == rev_in || token == rev_out || token == rbrac) {
-				SyntaxError(semicon_lost);
 				this->wait = true;
+				SyntaxError(semicon_lost);
 			}
 			else if (token != semicon) {
-				SyntaxError(semicon_wrong);
+				this->wait = true;
+				SyntaxError(semicon_lost);
 			}
 			// gen code
 			if (loop_id != 0) {
@@ -513,6 +517,7 @@ void Parser::Statement(int& var_number, int& level, int loop_id, int addr) {
 				this->wait = true;
 			}
 			else if (token != semicon) {
+				this->wait = true;
 				SyntaxError(semicon_wrong);
 			}
 			// gen code
@@ -724,7 +729,7 @@ void Parser::ReturnTail(int& var_number, int& level) {
 		this->wait = true;
 		if (fun.get_type() != rev_void) {
 			// semantic error
-			Generator::SemanticError(ret_type_error);
+			Generator::SemanticError(ret_type_error, "void");
 		}
 		// gen code
 		Generator::GenerateReturn(nullptr, var_number, fun);
@@ -746,6 +751,9 @@ VarRecord* Parser::IdentTail(string name, int& var_number) {
 		VarRecord* src = Expr(var_number);
 		VarRecord* des = VarTable::GetVar(name, fun);
 		// gen code
+		if (des == nullptr) {
+			Generator::SemanticError(null_pointer, name);
+		}
 		return Generator::GenerateAssign(des, src, var_number, fun);
 	}
 	else if (token == lparen) {
@@ -1008,7 +1016,8 @@ VarRecord* Parser::FactorTail(VarRecord* factor, int& var_number) {
 void Parser::SyntaxError(error_c error_code) {
 	if (lexer.get_error_number() != 0) return;
 	VarTable::syntax_error = true;
-	cout << "[syntax error at " << lexer.get_line_number() << "] ";
+	syntax_error++;
+	cout << "[syntax error at line" << lexer.get_line_number() << "] ";
 	switch (error_code)
 	{
 		case semicon_lost: {

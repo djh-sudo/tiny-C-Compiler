@@ -81,7 +81,8 @@ FunRecord::FunRecord() {
 	this->flushed = false;
 	this->has_return = false;
 }
-// 拷贝构造函数，仅仅拷贝函数声明
+
+//
 FunRecord::FunRecord(const FunRecord& src) {
 	this->type = src.type;
 	this->name = src.name;
@@ -355,7 +356,7 @@ void VarTable::AddVar(VarRecord& var) {
 		VarRecord* p_var = var_map[var.get_name()];
 		delete var_map[var.get_name()];
 		var_map[var.get_name()] = p_var;
-		Generator::SemanticError(var_redef);
+		Generator::SemanticError(var_redef, var.get_name());
 	}
 }
 
@@ -365,7 +366,7 @@ void VarTable::AddVar(VarRecord* var) {
 		var_map[var->get_name()] = var;
 	}
 	else {
-		Generator::SemanticError(var_redef);
+		Generator::SemanticError(var_redef, var->get_name());
 		delete var;
 	}
 	return;
@@ -377,7 +378,7 @@ VarRecord* VarTable::GetVar(string name, FunRecord&fun) {
 		return var_map[name];
 	}
 	else {
-		Generator::SemanticError(var_undef);
+		Generator::SemanticError(var_undef, name);
 		return nullptr;
 	}
 }
@@ -415,7 +416,7 @@ void VarTable::AddFun(FunRecord& fun) {
 		if (p->equal(fun)) {
 			if (fun.get_defined()) {
 				if (p->get_defined()) {
-					Generator::SemanticError(fun_redef); 
+					Generator::SemanticError(fun_redef, fun.get_name());
 					return;
 				}
 				else {
@@ -433,10 +434,10 @@ void VarTable::AddFun(FunRecord& fun) {
 			fun_map[fun.get_name()] = p;
 			if (fun.get_defined()) {
 				fun.FlushArgs();
-				Generator::SemanticError(fun_def_error);
+				Generator::SemanticError(fun_def_error, fun.get_name());
 			}
 			else {
-				Generator::SemanticError(fun_dec_error);
+				Generator::SemanticError(fun_dec_error, fun.get_name());
 			}
 		}
 	}
@@ -509,7 +510,7 @@ VarRecord* VarTable::GenerateCall(string fname, int& var_number, FunRecord& fun)
 		}
 	}
 	else {
-		Generator::SemanticError(fun_undef);
+		Generator::SemanticError(fun_undef, fname);
 		return nullptr;
 	}
 	return tmp;

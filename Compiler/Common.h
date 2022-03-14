@@ -85,7 +85,7 @@ enum error_c {
 	var_redef, var_undef, fun_redef, fun_def_error, fun_undef, fun_dec_error,
 	real_args_error, para_redef, local_redef,
 	break_non_in_while, continue_non_in_while,
-	str_non_cond, void_non_cond, ret_type_error,
+	str_non_cond, void_non_cond, ret_type_error, null_pointer,
 
 
 };

@@ -569,6 +569,9 @@ VarRecord* Generator::GenerateExp(VarRecord* f1, symbol op, VarRecord* f2, int& 
 VarRecord* Generator::GenerateAssign(VarRecord* des, VarRecord* src, int& var_number, FunRecord& fun) {
 	if (error)
 		return nullptr;
+	if (des == nullptr || src == nullptr) {
+		SemanticError(null_pointer);
+	}
 	if (des->get_type() == rev_void) {
 		SemanticError(void_non_assi);
 		return nullptr;
@@ -1074,7 +1077,7 @@ void Generator::sys_write(int fd, string buf, string count) {
 	syscall(128);
 }
 
-void Generator::SemanticError(error_c code) {
+void Generator::SemanticError(error_c code, string info) {
 	error = true;
 	cout << "[Semantic error at " << line_number << "] ";
 	switch (code)
@@ -1098,6 +1101,66 @@ void Generator::SemanticError(error_c code) {
 		case void_non_in: {
 			cout << "void type can't output!" << endl;
 			break;
+		}
+		case var_redef: {
+			cout << "variable (" << info << ") redefination!" << endl;
+			break;
+		} 
+		case var_undef: {
+			cout << "variable (" << info << ") undefination!" << endl;
+			break;
+		}
+		case fun_redef: {
+			cout << "function (" << info << ") redefination!" << endl;
+			break;
+		}
+		case fun_def_error: {
+			cout << "function (" << info << ") def error!" << endl;
+			break;
+		} 
+		case fun_undef: {
+			cout << "function (" << info << ") undefination!" << endl;
+			break;
+		}
+		case fun_dec_error: {
+			cout << "function declare error!" << endl;
+			break;
+		}
+		case real_args_error: {
+			cout << "real parameter type not match args!" << endl;
+			break;
+		}
+		case para_redef: {
+			cout << "parameter (" << info << ") conflict with other variable!" << endl;
+			break;
+		} 
+		case local_redef: {
+			cout << "local var (" << info << ") redefination!" << endl;
+			break;
+		}
+		case  break_non_in_while: {
+			cout << "break not in while statement!" << endl;
+			break;
+		} 
+		case continue_non_in_while: {
+			cout << "continue not in while statement!" << endl;
+			break;
+		}
+		case str_non_cond: {
+			cout << "string type can't be condition!" << endl;
+			break;
+		}
+		case void_non_cond: {
+			cout << "void type can't be condition!" << endl;
+			break;
+		} 
+		case ret_type_error: {
+			cout << "return var type not match function return type!" << endl;
+			break;
+		}
+		case null_pointer: {
+			cout << "null pointer with (" << info << ") !" << endl;
+			exit(0);
 		}
 		default: {
 			cout << "unknowned error" << endl;
