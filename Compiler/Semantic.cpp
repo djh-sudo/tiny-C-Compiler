@@ -115,7 +115,6 @@ void FunRecord::AddArgs(VarRecord var) {
 	}
 }
 
-
 bool FunRecord::HasName(string name) {
 	if (local_vars) {
 		int len = this->local_vars->size();

@@ -6,8 +6,14 @@ int main(){
 		while(j < 10){
 			j = j + 1;
 			out << i*j + "-";
+			if(j >= 7){
+				break;
+			}else{}
 		}
 		out << "\n";
+		if(i >= 7){
+			break;
+		}else{}
 	}
 	return 0;
 }

@@ -181,6 +181,29 @@ main:
 	mov ebx,1
 	mov eax,4
 	int 128
+	push 7
+	push 0
+	mov eax,[ebp-12]
+	mov ebx,[ebp-72]
+	cmp eax,ebx
+	jge @lab_base_cmp_33
+	mov eax,0
+	jmp @lab_base_cmp_exit_34
+@lab_base_cmp_33:
+	mov eax,1
+@lab_base_cmp_exit_34:
+	mov [ebp-76],eax
+	mov eax,[ebp-76]
+	cmp eax,0
+	je @if_1_middle
+	lea esp,[ebp-36]
+	jmp @while_2_exit
+	lea esp,[ebp-68]
+	jmp @if_1_end
+@if_1_middle:
+	lea esp,[ebp-68]
+	lea esp,[ebp-68]
+@if_1_end:
 	lea esp,[ebp-36]
 	jmp @while_2_loop
 @while_2_exit:
@@ -194,19 +217,19 @@ main:
 	mov [esp],al
 	mov [ebp-44],esp
 	cmp eax,0
-	je @lab_cpystr2_exit_34
+	je @lab_cpystr2_exit_38
 	mov ecx,@str_2_len
 	dec ecx
 	mov esi,@str_2
-@lab_cpystr2_33:
+@lab_cpystr2_37:
 	cmp ecx,-1
-	je @lab_cpystr2_exit_34
+	je @lab_cpystr2_exit_38
 	mov dl,[esi+ecx]
 	sub esp,1
 	mov [esp],dl
 	dec ecx
-	jmp @lab_cpystr2_33
-@lab_cpystr2_exit_34:
+	jmp @lab_cpystr2_37
+@lab_cpystr2_exit_38:
 	mov eax,[@s_esp]
 	mov [@s_esp],esp
 	mov esp,eax
@@ -217,6 +240,29 @@ main:
 	mov ebx,1
 	mov eax,4
 	int 128
+	push 7
+	push 0
+	mov eax,[ebp-4]
+	mov ebx,[ebp-48]
+	cmp eax,ebx
+	jge @lab_base_cmp_43
+	mov eax,0
+	jmp @lab_base_cmp_exit_44
+@lab_base_cmp_43:
+	mov eax,1
+@lab_base_cmp_exit_44:
+	mov [ebp-52],eax
+	mov eax,[ebp-52]
+	cmp eax,0
+	je @if_2_middle
+	lea esp,[ebp-16]
+	jmp @while_1_exit
+	lea esp,[ebp-44]
+	jmp @if_2_end
+@if_2_middle:
+	lea esp,[ebp-44]
+	lea esp,[ebp-44]
+@if_2_end:
 	lea esp,[ebp-16]
 	jmp @while_1_loop
 @while_1_exit:
