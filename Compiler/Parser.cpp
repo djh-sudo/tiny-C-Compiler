@@ -665,7 +665,7 @@ void Parser::IfState(int& var_number, int& level, int loop_id, int addr) {
 		}
 	}
 	// gen code
-	Block(init, level, if_id, block_addr);
+	Block(init, level, loop_id, addr);
 	Generator::GenerateBlock(block_addr, fun);
 	Generator::jmp(IF_END(to_string(temp_id)));
 	Generator::label(IF_MIDDLE(to_string(temp_id)));
@@ -688,7 +688,7 @@ void Parser::IfState(int& var_number, int& level, int loop_id, int addr) {
 
 	// gen code
 
-	Block(0, level, loop_id, block_addr);
+	Block(0, level, loop_id, addr);
 	Generator::GenerateBlock(block_addr, fun);
 	Generator::label(IF_END(to_string(temp_id)));
 	return;
@@ -1017,7 +1017,7 @@ void Parser::SyntaxError(error_c error_code) {
 	if (lexer.get_error_number() != 0) return;
 	VarTable::syntax_error = true;
 	syntax_error++;
-	cout << "[syntax error at line" << lexer.get_line_number() << "] ";
+	cout << "[syntax error at line " << lexer.get_line_number() << "] ";
 	switch (error_code)
 	{
 		case semicon_lost: {

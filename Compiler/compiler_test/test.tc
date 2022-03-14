@@ -1,5 +1,13 @@
 int main(){
-	int a;
-	a;
- 	return 0;
+	int i=0,j=0;
+	while(i < 10){
+		i = i + 1;
+		j = 0;
+		while(j < 10){
+			j = j + 1;
+			out << i*j + "-";
+		}
+		out << "\n";
+	}
+	return 0;
 }

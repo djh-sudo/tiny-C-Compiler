@@ -1,6 +1,6 @@
 #include "Semantic.h"
 #include "Generator.h"
-
+#include <cassert>
 
 /* ********** VarRecord **********  */
 VarRecord::VarRecord() {
