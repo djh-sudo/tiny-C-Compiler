@@ -1,17 +1,9 @@
 int main(){
-	int i=0,j=0;
-	while(i < 10){
-		i = i + 1;
-		j = 0;
-		while(j < 10){
-			j = j + 1;
-			out << i*j + "-";
-			if(j >= 7){
-				break;
-			}else{}
-		}
-		out << "\n";
-		if(i >= 7){
+	int g,i;
+	for(i=0;;i=i+1){
+		g = i + 1;
+		out << g * g * g + "\n";
+		if(i>5){
 			break;
 		}else{}
 	}

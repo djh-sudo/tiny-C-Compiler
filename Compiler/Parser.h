@@ -10,6 +10,7 @@ class Parser
 private:
 	VarRecord var;
 	FunRecord fun;
+	vector<int>for_level;
 	Lexer lexer;
 	bool wait; // 是否读入下一个token
 	symbol old_token;
@@ -18,6 +19,7 @@ private:
 	int syntax_error;
 	int while_id;
 	int if_id;
+	int for_id;
 	bool ident_only;
 
 public:
@@ -42,6 +44,12 @@ public:
 	void Statement(int& var_number, int& level, int loop_id, int addr);
 	void WhileState(int& var_number, int& level);
 	void IfState(int& var_number, int& level, int loop_id, int addr);
+	
+	void ForState(int& var_number, int& level);
+	void ForInit(int& var_number, int& level);
+	void ForCondition(int& var_number, int& level);
+	void ForEnd(int& var_number, int& level, int loop_id, int addr, int init);
+
 	void ReturnState(int& var_number, int& level);
 	void ReturnTail(int& var_number, int& level);
 	VarRecord* IdentTail(string name, int& var_number);

@@ -19,7 +19,7 @@ static char symbol_name[][ID_LEN]{
 	"comma", "chara", "strings", "semicon", "lparen", "rparen", "lbrac", "rbrac",
 	// ±£Áô×Ö
 	"min",
-	"rev_break", "rev_char", "rev_continue", "rev_else", "rev_extern",
+	"rev_break", "rev_char", "rev_continue", "rev_else", "rev_extern","rev_for",
 	"rev_if", "rev_in", "rev_int", "rev_out",
 	"rev_return", "rev_string", "rev_void", "rev_while",
 	// end
@@ -27,11 +27,11 @@ static char symbol_name[][ID_LEN]{
 };
 
 static char reserved_table[RESERVED_NUMBER][ID_LEN] = {
-	"break","char","continue","else","extern","if",
+	"break","char","continue","else","extern","for","if",
 	"in","int","out","return","string","void","while"
 };
 static enum symbol reserved_symbol[RESERVED_NUMBER] = {
-	rev_break,rev_char,rev_continue,rev_else,rev_extern,
+	rev_break,rev_char,rev_continue,rev_else,rev_extern,rev_for,
 	rev_if,rev_in,rev_int,rev_out,
 	rev_return,rev_string,rev_void,rev_while
 };

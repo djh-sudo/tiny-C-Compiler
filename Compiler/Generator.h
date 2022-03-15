@@ -19,7 +19,7 @@ static char symbol_data[][ID_LEN]{
 	"comma", "chara", "strings", "semicon", "lparen", "rparen", "lbrac", "rbrac",
 	// ±£Áô×Ö
 	"min",
-	"break", "char", "continue", "else", "extern",
+	"break", "char", "continue", "else", "extern","for",
 	"if", "in", "int", "out",
 	"return", "string", "void", "while",
 	// end
@@ -38,6 +38,7 @@ private:
 public:
 	static bool error;
 	static int line_number;
+	static int for_flag;
 public:
 	static void over();
 	bool static Init(const char* file_name);

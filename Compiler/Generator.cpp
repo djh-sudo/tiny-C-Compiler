@@ -4,6 +4,7 @@ bool Generator::buffer_flag = false;
 int Generator::id = 0;
 int Generator::line_number = 0;
 bool Generator::error = false;
+int Generator::for_flag = -1;
 FILE* Generator::fout = nullptr;
 
 
@@ -65,6 +66,11 @@ VarRecord* Generator::GenerateExp(VarRecord* f1, symbol op, VarRecord* f2, int& 
 
 	// create var
 	VarRecord* tmp = fun.CreateTmpVar(ret_type, false, var_number);
+	if (Generator::for_flag != -1) {
+		Generator::jmp(FOR_BLOCK(to_string(Generator::for_flag)));
+		Generator::label(FOR_ITER(to_string(Generator::for_flag)));
+		Generator::for_flag = -1;
+	}
 	string lab_loop, lab_exit;
 	switch (ret_type) {
 		case rev_string: {
@@ -585,6 +591,12 @@ VarRecord* Generator::GenerateAssign(VarRecord* des, VarRecord* src, int& var_nu
 	else if (des->get_type() != src->get_type()) {
 		SemanticError(type_assi);
 		return nullptr;
+	}
+
+	if (Generator::for_flag != -1) {
+		Generator::jmp(FOR_BLOCK(to_string(Generator::for_flag)));
+		Generator::label(FOR_ITER(to_string(Generator::for_flag)));
+		Generator::for_flag = -1;
 	}
 
 	if (des->get_type() == rev_string) {

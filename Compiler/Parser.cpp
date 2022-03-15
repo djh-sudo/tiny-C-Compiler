@@ -9,9 +9,11 @@ Parser::Parser(){
 	this->token = null;
 	this->if_id = 0;
 	this->while_id = 0;
+	this->for_id = 0;
 	this->syntax_error = 0;
 	this->compiler_ok = false;
 	this->ident_only = false;
+	this->for_level.clear();
 }
 
 
@@ -368,7 +370,8 @@ void Parser::SubProgram(int& var_number, int& level, int loop_id, int addr) {
 	NextToken();
 	if (token == semicon || token == rev_while || token == rev_if ||
 		token == rev_return || token == ident || token == rev_break ||
-		token == rev_continue || token == rev_in || token == rev_out) {
+		token == rev_continue || token == rev_in || token == rev_out||
+		token == rev_for) {
 		Statement(var_number, level, loop_id, addr);
 		SubProgram(var_number, level, loop_id, addr);
 	}
@@ -482,15 +485,26 @@ void Parser::Statement(int& var_number, int& level, int loop_id, int addr) {
 			WhileState(var_number, level);
 			break;
 		}
+		case rev_for: {
+			this->for_level.push_back(level);
+			ForState(var_number, level);
+			this->for_level.pop_back();
+			break;
+		}
 		case rev_if: {
+			if(!for_level.empty())
+				for_level.back()++;
 			IfState(var_number, level, loop_id, addr);
+			if (!for_level.empty())
+				for_level.back()--;
 			break;
 		}
 		case rev_break: {
 			NextToken();
 			if (token == ident || token == rev_while || token == rev_if ||
 				token == rev_return || token == rev_break || token == rev_continue ||
-				token == rev_in || token == rev_out || token == rbrac) {
+				token == rev_in || token == rev_out || token == rbrac
+				|| token == rev_for) {
 				this->wait = true;
 				SyntaxError(semicon_lost);
 			}
@@ -501,7 +515,12 @@ void Parser::Statement(int& var_number, int& level, int loop_id, int addr) {
 			// gen code
 			if (loop_id != 0) {
 				Generator::GenerateBlock(addr, fun);
-				Generator::jmp(WHILE_EXIT(to_string(loop_id)));
+				if (level != for_level.back() + 1) {
+					Generator::jmp(WHILE_EXIT(to_string(loop_id)));
+				}
+				else {
+					Generator::jmp(FOR_EXIT(to_string(loop_id)));
+				}
 			}
 			else {
 				Generator::SemanticError(break_non_in_while);
@@ -512,7 +531,8 @@ void Parser::Statement(int& var_number, int& level, int loop_id, int addr) {
 			NextToken();
 			if (token == ident || token == rev_while || token == rev_if ||
 				token == rev_return || token == rev_break || token == rev_continue ||
-				token == rev_in || token == rev_out || token == rbrac) {
+				token == rev_in || token == rev_out || token == rbrac||
+				token == rev_for) {
 				SyntaxError(semicon_lost);
 				this->wait = true;
 			}
@@ -523,7 +543,12 @@ void Parser::Statement(int& var_number, int& level, int loop_id, int addr) {
 			// gen code
 			if (loop_id != 0) {
 				Generator::GenerateBlock(addr, fun);
-				Generator::jmp(WHILE_LOOP(to_string(loop_id)));
+				if (level != for_level.back() + 1) {
+					Generator::jmp(WHILE_LOOP(to_string(loop_id)));
+				}
+				else {
+					Generator::jmp(FOR_EXIT(to_string(loop_id)));
+				}
 			}
 			else {
 				Generator::SemanticError(continue_non_in_while);
@@ -614,7 +639,7 @@ void Parser::WhileState(int& var_number, int& level) {
 			token == rev_return || token == rev_break || token == rev_continue ||
 			token == semicon || token == rev_in || token == rev_out ||
 			token == ident || token == rev_void || token == rev_int ||
-			token == rev_string || token == rev_char) {
+			token == rev_string || token == rev_char || token == rev_for) {
 			SyntaxError(rparen_lost);
 			this->wait = true;
 		}
@@ -656,7 +681,7 @@ void Parser::IfState(int& var_number, int& level, int loop_id, int addr) {
 			token == rev_return || token == rev_break || token == rev_continue ||
 			token == semicon || token == rev_in || token == rev_out ||
 			token == ident || token == rev_void || token == rev_int ||
-			token == rev_string || token == rev_char) {
+			token == rev_string || token == rev_char || token == rev_for) {
 			SyntaxError(rparen_lost);
 			this->wait = true;
 		}
@@ -678,7 +703,7 @@ void Parser::IfState(int& var_number, int& level, int loop_id, int addr) {
 			token == rev_if || token == rev_return || token == rev_break ||
 			token == rev_continue || token == rev_in || token == rev_out ||
 			token == rev_void || token == rev_int || token == rev_char ||
-			token == rev_string) {
+			token == rev_string || token == rev_for) {
 			SyntaxError(else_lost);
 		}
 		else {
@@ -693,6 +718,92 @@ void Parser::IfState(int& var_number, int& level, int loop_id, int addr) {
 	Generator::label(IF_END(to_string(temp_id)));
 	return;
 }
+
+void Parser::ForState(int& var_number, int& level) {
+	for_id++;
+	int temp_id = for_id;
+	NextToken();
+	if (!Match(lparen)) {
+		if (token == ident || token == number || token == lbrac ||
+			token == chara || token == strings || token == rparen) {
+			SyntaxError(lparen_lost);
+			this->wait = true;
+		}
+		else {
+			SyntaxError(lparen_wrong);
+		}
+	}
+	//
+	ForInit(var_number, level);
+	return;
+}
+
+void Parser::ForInit(int& var_number, int& level) {
+	NextToken();
+	if (token == rev_int || token == rev_char || token == rev_string) {
+		LocalDec(var_number, level);
+	}
+	else if (token == ident) {
+		this->wait = true;
+		OneExpr(var_number);
+		NextToken();
+	}
+	if (!Match(semicon)) {
+		SyntaxError(semicon_lost);
+		this->wait = true;
+	}
+	ForCondition(var_number, level);
+}
+
+void Parser::ForCondition(int& var_number, int& level) {
+	NextToken();
+	int temp_id = for_id;
+	// code gen
+	Generator::label(FOR_LOOP(to_string(temp_id)));
+	int block_addr = Generator::GenerateBlock(-1, fun);
+	int init = 0;
+	if (token != semicon) {
+		this->wait = true;
+		VarRecord* condition = Expr(init);
+		Generator::GenerateCondition(condition);
+		Generator::je(FOR_EXIT(to_string(temp_id)));
+		NextToken();
+	}
+	if (!Match(semicon)) {
+		SyntaxError(semicon_lost);
+		this->wait = true;
+	}
+	ForEnd(var_number, level, temp_id, block_addr,init);
+}
+
+void Parser::ForEnd(int& var_number, int& level, int loop_id, int addr,int init) {
+	NextToken();
+	if (token != rparen) {
+		this->wait = true;
+		Generator::for_flag = loop_id;
+		OneExpr(var_number);
+		NextToken();
+		// Statement(var_number, level, loop_id, addr);
+	}
+	else {
+		Generator::jmp(FOR_BLOCK(to_string(loop_id)));
+		Generator::label(FOR_ITER(to_string(loop_id)));
+	}
+	Generator::GenerateBlock(addr, fun);
+	Generator::jmp(FOR_LOOP(to_string(loop_id)));
+	if (!Match(rparen)) {
+		SyntaxError(rparen_lost);
+		this->wait = true;
+	}
+	
+	Generator::label(FOR_BLOCK(to_string(loop_id)));
+	Block(init, level, for_id, addr);
+	// Generator::GenerateBlock(addr, fun);
+	Generator::jmp(FOR_ITER(to_string(loop_id)));
+	Generator::label(FOR_EXIT(to_string(loop_id)));
+	return;
+}
+
 
 void Parser::ReturnState(int& var_number, int& level) {
 	ReturnTail(var_number, level);
@@ -862,6 +973,7 @@ VarRecord* Parser::ExprTail(VarRecord* factor, int& var_number) {
 		symbol cmp = token; // 
 		VarRecord* factor2 = Expr(var_number);
 		// gen code 
+		
 		return Generator::GenerateExp(factor, cmp, factor2, var_number, fun);
 	}
 	else if (token == ident || token == number || token == chara ||
@@ -925,6 +1037,7 @@ VarRecord* Parser::ItemTail(VarRecord* factor, int& var_number) {
 		// gen code
 		VarRecord* f2 = OneExpr(var_number);
 		return Generator::GenerateExp(factor, op, f2, var_number, fun);
+		
 	}
 	else if (token == ident || token == number || token == chara ||
 		token == strings || token == lparen) {
@@ -1136,6 +1249,7 @@ void Parser::SyntaxError(error_c error_code) {
 }
 
 Parser::~Parser() {
+	this->for_level.clear();
 	Generator::over();
 }
 

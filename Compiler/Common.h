@@ -6,7 +6,7 @@ using namespace std;
 #define NUM_LEN 9
 #define STRING_LEN 255
 #define MAX_LEN 80
-#define RESERVED_NUMBER 13
+#define RESERVED_NUMBER 14
 #define GLOBAL_STRING -2
 #define DYNAMIC_STRING -1
 
@@ -45,7 +45,11 @@ using namespace std;
 #define WHILE_EXIT(X) string("@while_") + X + "_exit"
 #define IF_MIDDLE(X) string("@if_") + X + "_middle"
 #define IF_END(X) string("@if_") + X + "_end"
-// 40个枚举符号
+#define FOR_LOOP(X) string("@for_") + X + "_loop"
+#define FOR_EXIT(X) string("@for_") + X + "_exit"
+#define FOR_ITER(X) string("@for_") + X + "_iter"
+#define FOR_BLOCK(X) string("@for_") + X + "_blcok"
+// 41个枚举符号
 enum symbol {
 	// 空，标识符，异常，数字
 	null,ident,excep,number,
@@ -59,7 +63,7 @@ enum symbol {
 	comma,chara,strings,semicon,lparen,rparen,lbrac,rbrac,
 	min,
 	// 保留字
-	rev_break,rev_char,rev_continue,rev_else,rev_extern,
+	rev_break,rev_char,rev_continue,rev_else,rev_extern,rev_for,
 	rev_if,rev_in,rev_int,rev_out,
 	rev_return,rev_string,rev_void,rev_while,
 	// end
