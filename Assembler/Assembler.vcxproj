@@ -125,11 +125,15 @@
   <ItemGroup>
     <ClInclude Include="Common.h" />
     <ClInclude Include="elf.h" />
+    <ClInclude Include="Elf_File.h" />
     <ClInclude Include="Lexer.h" />
+    <ClInclude Include="Semantic.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Elf_File.cpp" />
     <ClCompile Include="Lexer.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Semantic.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

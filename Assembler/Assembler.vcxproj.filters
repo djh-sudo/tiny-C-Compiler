@@ -24,12 +24,24 @@
     <ClInclude Include="Lexer.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Elf_File.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Semantic.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Lexer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Elf_File.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Semantic.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
