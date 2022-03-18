@@ -30,8 +30,8 @@ static char reserved_table[RESERVED_NUMBER][ID_LEN] = {
 	lea,call,sys_int,imul,
 	idiv,neg,inc,dec,jmp,
 	je ,jg jl ,jge,
-	jle,jne,jna,push,
-	pop,ret,section,
+	jle,jne,jna,_push,
+	_pop,_ret,_section,
 	global,equ,times,
 	db,dw,dd
 };

@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include "elf.h"
+#include "Semantic.h"
 
 
 using namespace std;
@@ -46,8 +47,9 @@ public:
 			     Elf32_Addr sh_addr, Elf32_Off sh_offset, Elf32_Word sh_size,
 			     Elf32_Word sh_link, Elf32_Word sh_info, Elf32_Word sh_addr_align,
 			     Elf32_Word sh_enter_size);
-	void AddSym(string name);
+	void AddSym(VarRecord* var);
 	void AddSym(string name, Elf32_Sym*);
 	Reloc* AddReloc(string seg, int addr, string name, int type);
+
 };
 

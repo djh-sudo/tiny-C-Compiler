@@ -45,10 +45,10 @@
 #define jle "jle"
 #define jne "jne"
 #define jna "jna"
-#define push "push"
-#define pop "pop"
-#define ret "ret"
-#define section "section"
+#define _push "push"
+#define _pop "pop"
+#define _ret "ret"
+#define _section "section"
 #define global "global"
 #define equ "equ"
 #define times "times"
@@ -56,6 +56,21 @@
 #define dw "dw"
 #define dd "dd"
 
+#define IMMD 1
+#define MEMO 2
+#define REGS 3
+
+#define LAB_HEAD "@lab_"
+#define IF_HEAD "@if_"
+#define WHILE_HEAD "@while_"
+#define FOR_HEAD "@for_"
+#define CAL_HEAD "@cal_"
+#define STACK_HEAD "@s_stack"
+
+#define TEXT_SEG ".text"
+#define DATA_SEG ".data"
+#define STR2LONG "@str2long"
+#define PROC_BUF "@procBuf"
 
 enum symbol {
 	null, ident, excep, number, strings,
