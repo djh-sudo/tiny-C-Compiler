@@ -69,8 +69,16 @@
 
 #define TEXT_SEG ".text"
 #define DATA_SEG ".data"
+#define REL_TEXT_SEG ".rel.text"
+#define REL_DATA_SEG ".rel.data"
+#define BSS_SEG ".bss"
+#define SH_STR_SEG ".shstrtab"
+#define SYM_SEG ".symtab"
+#define STR_SEG ".strtab"
+
 #define STR2LONG "@str2long"
 #define PROC_BUF "@procBuf"
+
 
 enum symbol {
 	null, ident, excep, number, strings,
@@ -87,4 +95,12 @@ enum symbol {
 	rev_jle, rev_jne, rev_jna, rev_push,
 	rev_pop, rev_ret, rev_section, rev_global,
 	rev_equ, rev_times, rev_db, rev_dw, rev_dd
+};
+
+enum error_c {
+	ident_lost, times_wrong, equ_wrong, len_type_wrong,
+	type_wrong, comma_lost, instruction_wrong, subs_non_number,
+	regs_wrong, rbrac_lost, lbrac_lost, immd_non_des, MEMO_non_both,
+
+
 };

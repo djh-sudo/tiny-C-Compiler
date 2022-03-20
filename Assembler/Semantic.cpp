@@ -1,5 +1,7 @@
 #include "Semantic.h"
 
+
+
 int VarRecord::current_addr = 0x00000000;
 
 VarRecord::VarRecord(string name, bool externed,string cur_seg_name) {
@@ -29,18 +31,26 @@ VarRecord::VarRecord(string name, int addr,string cur_seg_name) {
 	this->sym_length = 0;
 }
 
-VarRecord::VarRecord(string name, int times, int len_type, 
+VarRecord::VarRecord(string name, int time, int len_type, 
 	                 int content[], int content_len, string cur_seg_name) {
 	this->sym_name = name;
 	this->addr = current_addr;
 	this->seg_name = cur_seg_name;
 	this->is_equ = false;
-	this->time = times;
+	this->time = time;
 	this->len_type = len_type;
 	this->sym_length = content_len;
 	this->sym_array = new int[content_len];
 	for (int i = 0; i < content_len; i++) {
 		this->sym_array[i] = content[i];
+	}
+}
+
+void VarRecord::Write(bool scan) {
+	for (int i = 0; i < time; i++) {
+		for (int j = 0; j < sym_length; j++) {
+			Generate::WriteBytes(sym_array[i], len_type, scan);
+		}
 	}
 }
 
@@ -130,15 +140,41 @@ VarRecord* Table::GetVar(string name,string cur_seg_name) {
 void Table::SwtichSeg(int& data_len, string& cur_seg_name,string seg_name) {
 	if (scan_first) {
 		data_len += (4 - data_len % 4) % 4;
-		// todo obj output
+		Elf_File::AddShdr(cur_seg_name, VarRecord::current_addr, data_len);
 		if (cur_seg_name != ".bss") {
 			data_len += VarRecord::current_addr;
 		}
-		cur_seg_name = seg_name;
-		VarRecord::current_addr = 0x00000000;
 	}
+	cur_seg_name = seg_name;
+	VarRecord::current_addr = 0x00000000;
 }
 	
+void Table::ExportSym() {
+	unordered_map<string, VarRecord*>::iterator vi, vend;
+	vend = var_map.end();
+	for (vi = var_map.begin(); vi != vend; vi++) {
+		VarRecord* var = vi->second;
+		if (!var->get_is_equ()) {
+			Elf_File::AddSym(var);
+		}
+	}
+}
+
+void Table::Write(bool scan) {
+	for (int i = 0; i < def_labs.size(); i++) {
+		def_labs[i]->Write(scan);
+	}
+}
+
+void Table::Over() {
+	unordered_map<string, VarRecord*>::iterator vi, vend;
+	vend = var_map.end();
+	for (vi = var_map.begin(); vi != vend; vi++) {
+		delete vi->second;
+	}
+	var_map.clear();
+}
+
 void Table::set_scan_first(bool scan) {
 	scan_first = scan;
 }
@@ -234,9 +270,9 @@ void Inst::SetDisp(int disp,int len) {
 	this->disp_len = len;
 }
 
-void Inst::WriteDisp() {
+void Inst::WriteDisp(bool scan) {
 	if (disp_len) {
-		// todo write
+		Generate::WriteBytes(disp, disp_len, scan);
 		disp_len = 0;
 	}
 }

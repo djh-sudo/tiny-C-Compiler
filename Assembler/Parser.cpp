@@ -2,9 +2,13 @@
 #include "Generate.h"
 
 
-void Parser::Init() {
-	this->scan_first = true;
+void Parser::Init(const char* file_name) {
 	this->rel_var = nullptr;
+	this->wait = false;
+	this->data_length = 0;
+	this->cur_seg = "";
+	this->instructure.Init();
+	lexer.Init(file_name);
 }
 
 bool Parser::NextToken() {
@@ -15,11 +19,16 @@ bool Parser::NextToken() {
 	bool flag = false;
 	while (true) {
 		flag = lexer.GetSym();
-		if (token == null || token == excep) {
+		if (lexer.get_symbol() == null || lexer.get_symbol() == excep) {
 			if (!flag) {
 				token = null;
-				if (scan_first) {
+				if (Table::get_scan_first()) {
 					// table
+					lexer.Over();
+					lexer = Lexer();
+					lexer.Init("./ass_test/common.s");
+					Table::SwtichSeg(data_length, cur_seg, lexer.get_id());
+					Table::set_scan_first(false);
 					continue;
 				}
 				return false;
@@ -38,7 +47,7 @@ bool Parser::Match(symbol t) {
 
 void Parser::Program() {
 	if (!NextToken() || token == null) {
-		// table
+		Table::ExportSym();
 		return;
 	}
 	else {
@@ -52,29 +61,32 @@ void Parser::Program() {
 			case rev_section: {
 				NextToken();
 				if (Match(ident)) {
-					// table
+					Table::SwtichSeg(data_length, cur_seg, lexer.get_id());
 				}
 				else {
-					// error
+					Generate::Error(ident_lost);
 				}
 				break;
 			}
 			case rev_global: {
 				NextToken();
 				if (!Match(ident)) {
-					// error
+					Generate::Error(ident_lost);
 				}
 				break;
 			}
 			default: {
+				this->wait = true;
 				Instruct();
 				break;
 			}
 		}
+		Program();
 	}
 }
 
 void Parser::IdentTail(string name) {
+	NextToken();
 	switch (token) {
 		case rev_times:{
 			NextToken();
@@ -82,7 +94,7 @@ void Parser::IdentTail(string name) {
 				BaeseTail(name,lexer.get_num());
 			}
 			else {
-				// error
+				Generate::Error(times_wrong);
 			}
 			break;
 		}
@@ -90,19 +102,20 @@ void Parser::IdentTail(string name) {
 			NextToken();
 			if (Match(number)) {
 				VarRecord* var = new VarRecord(name, lexer.get_num(),cur_seg);
-				// table
+				Table::AddVar(var);
 			}
 			else {
-				// error
+				Generate::Error(equ_wrong);
 			}
 			break;
 		}
 		case colon: {
 			VarRecord* var = new VarRecord(name, false, cur_seg);
-			// table
+			Table::AddVar(var);
 			break;
 		}
 		default: {
+			this->wait = true;
 			BaeseTail(name, 1);
 			break;
 		}
@@ -110,6 +123,7 @@ void Parser::IdentTail(string name) {
 }
 
 void Parser::BaeseTail(string name, int num) {
+
 	int length = Len();
 	Value(name, num, length);
 }
@@ -127,7 +141,8 @@ int Parser::Len() {
 			return 4;
 		}
 		default: {
-			// error
+			Generate::Error(len_type_wrong);
+			return 0;
 		}
 	}
 }
@@ -138,7 +153,7 @@ void Parser::Value(string name, int time, int len) {
 	Type(content, content_length, len);
 	ValTail(content, content_length, len);
 	VarRecord* var = new VarRecord(name, time, len, content, content_length, cur_seg);
-	// table
+	Table::AddVar(var);
 }
 
 void Parser::Type(int content[], int& content_len, int len) {
@@ -159,11 +174,18 @@ void Parser::Type(int content[], int& content_len, int len) {
 		}
 		case ident: {
 			string name = lexer.get_id();
-			// table
+			VarRecord* var = Table::GetVar(name, cur_seg);
+			content[content_len] = var->get_addr();
+			if (!Table::get_scan_first()) {
+				if (!var->get_is_equ()) {
+					Elf_File::AddReloc(cur_seg, VarRecord::current_addr + content_len * len, name, R_386_32);
+				}
+				content_len++;
+			}
 			break;
 		}
 		default: {
-			// error
+			Generate::Error(type_wrong);
 			break;
 		}
 	}
@@ -194,10 +216,10 @@ void Parser::Instruct() {
 		NextToken();
 		if (Match(comma)) {
 			Operate(reg_num, src_type, len);
-			// gen code
+			Generate::Generate2Op(op, des_type, src_type, len, instructure, Table::get_scan_first(), rel_var, cur_seg);
 		}
 		else {
-			// error
+			Generate::Error(comma_lost);
 		}
 	}
 	else if (token >= rev_call && token <= rev_pop) {
@@ -205,14 +227,14 @@ void Parser::Instruct() {
 		int type = 0;
 		int reg_num = 0;
 		Operate(reg_num, type, len);
-		// gen code
+		Generate::Generate1Op(op, type, len, instructure, Table::get_scan_first(), rel_var, cur_seg);
 	}
 	else if (token == rev_ret) {
 		symbol op = token;
-		// gen code
+		Generate::Generate0Op(op, Table::get_scan_first());
 	}
 	else {
-		// error
+		Generate::Error(instruction_wrong);
 	}
 }
 
@@ -229,7 +251,13 @@ void Parser::Operate(int& reg_num, int& type, int& len) {
 		case ident: {
 			type = IMMD;
 			name = lexer.get_id();
-			// table
+			var = Table::GetVar(name, cur_seg);
+			instructure.set_imm32(var->get_addr());
+			if (!Table::get_scan_first()) {
+				if (!var->get_is_equ()) {
+					rel_var = var;
+				}
+			}
 			break;
 		}
 		case lbrac: {
@@ -245,7 +273,7 @@ void Parser::Operate(int& reg_num, int& type, int& len) {
 				instructure.set_imm32(-lexer.get_num());
 			}
 			else {
-				// error
+				Generate::Error(subs_non_number);
 			}
 			break;
 		}
@@ -276,7 +304,7 @@ int Parser::Register() {
 		return 4;
 	}
 	else {
-		// error
+		Generate::Error(regs_wrong);
 		return 0;
 	}
 }
@@ -287,11 +315,11 @@ void Parser::Memory(){
 		Addr();
 		NextToken();
 		if (!Match(rbrac)) {
-			// error
+			Generate::Error(rbrac_lost);
 		}
 	}
 	else {
-		// error
+		Generate::Error(lbrac_lost);
 	}
 }
 
@@ -310,7 +338,13 @@ void Parser::Addr(){
 			instructure.mod_rm.set_mod(0);
 			instructure.mod_rm.set_rm(5);
 			name = lexer.get_id();
-			// table
+			var = Table::GetVar(name, cur_seg);
+			instructure.SetDisp(var->get_addr(), 4);
+			if (!Table::get_scan_first()) {
+				if (!var->get_is_equ()) {
+					rel_var = var;
+				}
+			}
 			break;
 		}
 		default: {
@@ -382,4 +416,10 @@ void Parser::RegAddrTail(symbol base_reg, const int type, symbol sign){
 		instructure.sib.set_index(token - rev_al - (1 - type_reg % 4) * 8);
 		instructure.sib.set_base(base_reg - rev_al - (1 - type % 4) * 8);
 	}
+}
+
+void Parser::Over() {
+	Elf_File::WriteElf("./ass_test/common", data_length, Table::get_scan_first());
+	lexer.Over();
+	Generate::Over();
 }

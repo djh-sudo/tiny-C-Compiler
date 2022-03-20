@@ -1,13 +1,14 @@
 #include <iostream>
 #include <string>
 #include "Generate.h"
-	
+
+
+
 using namespace std;
 FILE* Generate::fout = nullptr;
 int Generate::total_length = 0;
-Elf_File Generate::obj = Elf_File();
-
-
+int Generate::error_number = 0;
+int Generate::line_number = 0;
 bool Generate::Init(string file_name) {
 	fout = fopen(file_name.c_str(), "w");
 	if (fout != nullptr) {
@@ -36,8 +37,8 @@ void Generate::WriteSIB(SIB sib, bool scan){
 	if (sib.get_scale() != -1){
 		unsigned char s = (unsigned char)(
 			(sib.get_scale() & 3) << 6 +
-			(sib.get_index() & 7 << 3 +
-			 sib.get_base() & 7)
+			(sib.get_index() & 7) << 3 +
+			(sib.get_base() & 7)
 			);
 		WriteBytes(s, 1, scan);
 	}
@@ -51,6 +52,14 @@ void Generate::WriteBytes(int value, int len, bool scan){
 	return;
 }
 
+void Generate::WriteBytes(int value, int len) {
+	fwrite(&value, len, 1, fout);
+}
+
+void Generate::WriteBytes(const void* buffer, size_t len) {
+	fwrite(buffer, len, 1, fout);
+}
+
 bool Generate::HandleRelocation(int type, bool scan, VarRecord* rel,string cur_seg) {
 	if (scan || rel == nullptr) {
 		rel = nullptr;
@@ -60,14 +69,14 @@ bool Generate::HandleRelocation(int type, bool scan, VarRecord* rel,string cur_s
 	if (type == R_386_32) {
 		if (!rel->get_is_equ()) {
 			//obj
-			obj.AddReloc(cur_seg, VarRecord::current_addr, rel->get_sym_name(), type);
+			Elf_File::AddReloc(cur_seg, VarRecord::current_addr, rel->get_sym_name(), type);
 			flag = true;
 		}
 	}
 	else if (type == R_386_PC32) {
 		if (rel->get_is_externed()) {
 			// obj
-			obj.AddReloc(cur_seg, VarRecord::current_addr, rel->get_sym_name(), type);
+			Elf_File::AddReloc(cur_seg, VarRecord::current_addr, rel->get_sym_name(), type);
 			flag = true;
 		}
 	}
@@ -78,6 +87,13 @@ bool Generate::HandleRelocation(int type, bool scan, VarRecord* rel,string cur_s
 
 void Generate::Generate2Op(symbol op, int des, int src, int len, Inst instructure, bool scan, VarRecord* rel, string cur_seg) {
 	int index = -1;
+	if (des == IMMD) {
+		Error(immd_non_des);
+	}
+	else if (des == MEMO && src == MEMO) {
+		Error(MEMO_non_both);
+	}
+
 	if (src == IMMD) index = 3;
 	else index = (des - 2) * 2 + (src - 2);
 	index = (op - rev_mov) * 8 + (1 - len % 4) * 4 + index;
@@ -122,7 +138,7 @@ void Generate::Generate2Op(symbol op, int des, int src, int len, Inst instructur
 			WriteModRM(instructure.mod_rm, scan);
 			if (instructure.mod_rm.get_rm() == 5) {
 				HandleRelocation(R_386_32,scan,rel,cur_seg);
-				instructure.WriteDisp();
+				instructure.WriteDisp(scan);
 			}
 			else if (instructure.mod_rm.get_rm() == 4) {
 				WriteSIB(instructure.sib, scan);
@@ -134,7 +150,7 @@ void Generate::Generate2Op(symbol op, int des, int src, int len, Inst instructur
 			WriteModRM(instructure.mod_rm, scan);
 			if (instructure.mod_rm.get_rm() == 4)
 				WriteSIB(instructure.sib, scan);
-			instructure.WriteDisp();
+			instructure.WriteDisp(scan);
 			break;
 		}
 		case 2: {
@@ -142,7 +158,7 @@ void Generate::Generate2Op(symbol op, int des, int src, int len, Inst instructur
 			WriteModRM(instructure.mod_rm, scan);
 			if (instructure.mod_rm.get_rm() == 4)
 				WriteSIB(instructure.sib,scan);
-			instructure.WriteDisp();
+			instructure.WriteDisp(scan);
 			break;
 		}
 		case 3: {
@@ -261,3 +277,52 @@ void Generate::Over() {
 	}
 }
 
+void Generate::Error(error_c code) {
+	error_number++;
+	cout << "error at line [" << line_number << "] ";
+	switch (code) {
+		case ident_lost:{
+			cout << "ident may lost!" << endl;
+			break;
+		}
+		case times_wrong: {
+			cout << "`times` can only with number!" << endl;
+			break;
+		}
+		case equ_wrong: {
+			cout << "`equ` can only with number!" << endl;
+			break;
+		}
+		case len_type_wrong: {
+			cout << "type length only can be 1,2,4 (Byte)!" << endl;
+			break;
+		}
+		case type_wrong: {
+			cout << "type only can be db,dd,dw!" << endl;
+		}
+		case comma_lost: {
+			cout << "comma(,) maybe lost!" << endl;
+			break;
+		}
+		case instruction_wrong: {
+			cout << "unrecognizied instruction!" << endl;
+			break;
+		}
+		case subs_non_number: {
+			cout << "sub(-) can only with number!" << endl;
+			break;
+		}
+		case regs_wrong: {
+			cout << "reister wrong! not an effective regs!" << endl;
+			break;
+		}
+		case rbrac_lost: {
+			cout << "rbrac(]) maybe lost!" << endl;
+			break;
+		}
+		case lbrac_lost: {
+			cout << "lbrac([) maybe lost!" << endl;
+			break;
+		}
+	}
+}

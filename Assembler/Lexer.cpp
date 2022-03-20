@@ -1,4 +1,6 @@
 #include "Lexer.h"
+#include "Generate.h"
+
 
 Lexer::Lexer() {
 	this->line_number = 0;
@@ -18,7 +20,7 @@ Lexer::Lexer() {
 }
 
 Lexer::~Lexer() {
-	over();
+	Over();
 }
 
 bool Lexer::Init(const char* file_path) {
@@ -38,6 +40,7 @@ bool Lexer::GetChar() {
 		position = 0;
 		line_len = 0;
 		line_number++;
+		Generate::line_number++;
 		current_char = ' ';
 		while (current_char != '\n') {
 			if (fscanf(fin, "%c", &current_char) == EOF) {
@@ -212,7 +215,7 @@ void Lexer::CheckReserved() {
 	return;
 }
 
-void Lexer::over() {
+void Lexer::Over() {
 	if (fin) {
 		fclose(fin);
 		fin = nullptr;

@@ -12,9 +12,9 @@ static enum symbol reserved_symbol[RESERVED_NUMBER]{
 	rev_ah, rev_ch, rev_dh, rev_bh,
 	rev_eax, rev_ecx, rev_edx, rev_ebx,
 	rev_esp, rev_ebp, rev_esi, rev_edi,
-	rev_mov, rev_cmp, rev_sub, rev_add, rev_lea,
-	rev_call, rev_sys_int, rev_imul, rev_idiv,
-	rev_neg, rev_inc, rev_dec, rev_jmp,
+	rev_mov, rev_cmp, rev_sub, rev_add,
+	rev_lea,rev_call, rev_sys_int, rev_imul,
+	rev_idiv,rev_neg, rev_inc, rev_dec, rev_jmp,
 	rev_je, rev_jg, rev_jl, rev_jge,
 	rev_jle, rev_jne, rev_jna, rev_push,
 	rev_pop, rev_ret, rev_section, rev_global,
@@ -29,7 +29,7 @@ static char reserved_table[RESERVED_NUMBER][ID_LEN] = {
 	mov,cmp,sub,add,
 	lea,call,sys_int,imul,
 	idiv,neg,inc,dec,jmp,
-	je ,jg jl ,jge,
+	je ,jg, jl ,jge,
 	jle,jne,jna,_push,
 	_pop,_ret,_section,
 	global,equ,times,
@@ -59,7 +59,7 @@ public:
 	Lexer();
 	~Lexer();
 	bool Init(const char* file_name);
-	void over();
+	void Over();
 	bool GetChar();
 	bool GetSym();
 	void CheckReserved();

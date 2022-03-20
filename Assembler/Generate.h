@@ -3,8 +3,14 @@
 #include <iostream>
 #include <cstdio>
 #include <string>
-#include "Semantic.h"
 #include "Common.h"
+#include "Semantic.h"
+
+class VarRecord;
+class SIB;
+class ModRM;
+class Inst;
+using namespace std;
 
 
 static unsigned char op2code[] = {
@@ -35,16 +41,21 @@ class Generate{
 private:
 	static FILE* fout;
 	static int total_length;
-	static Elf_File obj;
+public:
+	static int error_number;
+	static int line_number;
 public:
 	static bool Init(string file_name);
 	static void WriteModRM(ModRM modrm, bool scan);
 	static void WriteSIB(SIB sib, bool scan);
 	static void WriteBytes(int value, int len, bool scan);
+	static void WriteBytes(int value, int len);
+	static void WriteBytes(const void* buffer, size_t len);
 	static bool HandleRelocation(int type, bool scan, VarRecord* rel, string cur_seg);
 	static void Generate2Op(symbol op, int des, int src, int len, Inst instructure, bool scan, VarRecord* rel, string cur_seg);
 	static void Generate1Op(symbol op, int op_type, int len, Inst instructure, bool scan, VarRecord* relo, string cur_seg);
 	static void Generate0Op(symbol op, bool scan);
 	static void Over();
+	static void Error(error_c code);
 };	 
 	 

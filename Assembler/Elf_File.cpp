@@ -16,17 +16,66 @@ Reloc::Reloc(string seg, int addr, string name, int type) {
 	this->type = type;
 }
 
-Elf_File::Elf_File() {
-	this->sh_str_tab = nullptr;
-	this->str_tab = nullptr;
-	this->shstrtab_size = 0;
-	this->strtab_size = 0;
-	this->shdr_tab.clear();
-	this->shdr_name.clear();
-	this->rel_tab.clear();
-	this->sym_name.clear();
-	this->rel_data_tab.clear();
-	this->rel_text_tab.clear();
+string Reloc::get_target_seg() {
+	return target_seg;
+}
+
+int Reloc::get_offset() {
+	return offset;
+}
+
+string Reloc::get_name() {
+	return name;
+}
+
+int Reloc::get_type() {
+	return type;
+}
+
+void Reloc::set_target_seg(string seg) {
+	this->target_seg = seg;
+}
+
+void Reloc::set_offset(int offset) {
+	this->offset = offset;
+}
+
+void Reloc::set_name(string name) {
+	this->name = name;
+}
+
+void Reloc::set_type(int type) {
+	this->type = type;
+}
+
+Elf32_Ehdr Elf_File::ehdr;
+unordered_map<string, Elf32_Shdr*>Elf_File::shdr_tab;
+vector<string>Elf_File::shdr_name;
+unordered_map<string, Elf32_Sym*>Elf_File::sym_tab;
+vector<string>Elf_File::sym_name;
+vector<Reloc*>Elf_File::rel_tab;
+
+char* Elf_File::sh_str_tab = nullptr;
+int Elf_File::shstrtab_size = 0;
+char* Elf_File::str_tab = nullptr;
+int Elf_File::strtab_size = 0;
+vector<Elf32_Rel*>Elf_File::rel_text_tab;
+vector<Elf32_Rel*>Elf_File::rel_data_tab;
+FILE* Elf_File::fin = nullptr;
+
+
+void Elf_File::Init() {
+	sh_str_tab = nullptr;
+	str_tab = nullptr;
+	fin = nullptr;
+	shstrtab_size = 0;
+	strtab_size = 0;
+	shdr_tab.clear();
+	shdr_name.clear();
+	rel_tab.clear();
+	sym_name.clear();
+	rel_data_tab.clear();
+	rel_text_tab.clear();
 	AddShdr("", 0, 0, 0, 0, 0, 0, 0, 0, 0);
 	AddSym("", nullptr);
 }
@@ -160,3 +209,172 @@ Reloc* Elf_File::AddReloc(string seg, int addr, string name, int type) {
 	return rel;
 }
 
+void Elf_File::PaddingSeg(string prev, string next) {
+	char padding = 0;
+	int padding_number = shdr_tab[next]->sh_offset -
+		(shdr_tab[prev]->sh_offset + shdr_tab[prev]->sh_size);
+	while (padding_number--) {
+		Generate::WriteBytes(padding, 1);
+	}
+}
+
+void Elf_File::AssembleObj(int data_length) {
+	int* pointer = (int*)ehdr.e_ident;
+	*pointer = 0x464c457f;
+	pointer++;
+	*pointer = 0x00010101;
+	pointer++;
+	*pointer = 0x00;
+	pointer++;
+	*pointer = 0x00;
+	ehdr.e_type = ET_REL;
+	ehdr.e_machine = EM_386;
+	ehdr.e_version = EV_CURRENT;
+	ehdr.e_entry = 0;
+	ehdr.e_phoff = 0;
+	ehdr.e_flags = 0;
+	ehdr.e_ehsize = 52;
+	ehdr.e_phentsize = 0;
+	ehdr.e_phnum = 0;
+	ehdr.e_shentsize = 40;
+	ehdr.e_shnum = 9;
+	ehdr.e_shstrndx = 4;
+	// 
+	int cur_offset = 52 + data_length;
+	shstrtab_size = 51;
+		/* (string(REL_TEXT_SEG) + REL_DATA_SEG + BSS_SEG
+			+ SH_STR_SEG + SYM_SEG + STR_SEG).size + 5; */
+	sh_str_tab = new char[shstrtab_size];
+	char* str = sh_str_tab;
+	int index = 0;
+	unordered_map<string, int>shstr_index;
+	
+	shstr_index[REL_TEXT_SEG] = index;
+	strcpy(str + index, REL_TEXT_SEG);
+
+	shstr_index[TEXT_SEG] = index + 4;
+	index += 10;
+	shstr_index[""] = index - 1;
+	
+	shstr_index[REL_DATA_SEG] = index;
+	strcpy(str + index, REL_DATA_SEG);
+
+	shstr_index[DATA_SEG] = index + 4;
+	index += 10;
+
+	shstr_index[BSS_SEG] = index;
+	strcpy(str + index, BSS_SEG);
+	index += 5;
+
+	shstr_index[SH_STR_SEG] = index;
+	strcpy(str + index, SH_STR_SEG);
+	index += 10;
+
+	shstr_index[SYM_SEG] = index;
+	strcpy(str + index, SYM_SEG);
+	index += 8;
+
+	shstr_index[STR_SEG] = index;
+	strcpy(str + index, STR_SEG);
+	index += 8;
+
+	AddShdr(SH_STR_SEG,       /* string sh_name */ 
+		    SHT_STRTAB, 	  /* Elf32_Word sh_type */
+		    0,				  /* Elf32_Word sh_flag */
+		    0,				  /* Elf32_Addr sh_addr */
+		    cur_offset,		  /* Elf32_Off sh_offset */
+		    shstrtab_size,	  /* Elf32_Word sh_size */
+		    SHN_UNDEF,		  /* Elf32_Word sh_link */
+		    0,				  /* Elf32_Word sh_info */
+		    1,				  /* Elf32_Word sh_addr_align */
+		    0);				  /* Elf32_Word sh_enter_size */
+	cur_offset += shstrtab_size;
+	ehdr.e_shoff = cur_offset;
+	cur_offset += 9 * 40;
+	AddShdr(SYM_SEG, SHT_SYMTAB, 0, 0, cur_offset, sym_name.size() * 16, 0, 0, 1, 16);
+	shdr_tab[SYM_SEG]->sh_link = GetSegIndex(SYM_SEG) + 1;
+	strtab_size = 0;
+	for (int i = 0; i < sym_name.size(); i++) {
+		strtab_size += sym_name[i].size() + 1;
+	}
+	cur_offset += sym_name.size() * 16;
+	AddShdr(STR_SEG, SHT_STRTAB, 0, 0, cur_offset, strtab_size, SHN_UNDEF, 0, 1, 0);
+	str_tab = new char[strtab_size];
+	str = str_tab;
+	index = 0;
+	for (int i = 0; i < sym_name.size(); i++) {
+		sym_tab[sym_name[i]]->st_name = index;
+		strcpy(str + index, sym_name[i].c_str());
+		index += (sym_name[i].size() + 1);
+	}
+
+	// rel
+	for (int i = 0; i < rel_tab.size(); i++) {
+		Elf32_Rel* rel = new Elf32_Rel();
+		rel->r_offset = rel_tab[i]->get_offset();
+		rel->r_info = ELF32_R_INFO((Elf32_Word)GetSymIndex(rel_tab[i]->get_name()), rel_tab[i]->get_type());
+		if (rel_tab[i]->get_target_seg() == TEXT_SEG) {
+			rel_text_tab.push_back(rel);
+		}
+		else if (rel_tab[i]->get_target_seg() == DATA_SEG) {
+			rel_data_tab.push_back(rel);
+		}
+	}
+	cur_offset += strtab_size;
+	AddShdr(REL_TEXT_SEG, SHT_REL, 0, 0, cur_offset, rel_text_tab.size() * 8, GetSegIndex(SYM_SEG), GetSegIndex(TEXT_SEG), 1, 8);
+	cur_offset += rel_text_tab.size() * 8;
+	AddShdr(REL_DATA_SEG, SHT_REL, 0, 0, cur_offset, rel_data_tab.size() * 8, GetSegIndex(SYM_SEG), GetSegIndex(DATA_SEG), 1, 8);
+
+	for (int i = 0; i < shdr_name.size(); i++) {
+		int index = shstr_index[shdr_name[i]];
+		shdr_tab[shdr_name[i]]->sh_name = index;
+	}
+}
+
+void Elf_File::WriteElfTail() {
+	Generate::WriteBytes(sh_str_tab, shstrtab_size);
+	for (int i = 0; i < shdr_name.size(); i++) {
+		Elf32_Shdr* sh = shdr_tab[shdr_name[i]];
+		Generate::WriteBytes(sh, ehdr.e_shentsize);
+	}
+
+	for (int i = 0; i < sym_name.size(); i++) {
+		Elf32_Sym* sym = sym_tab[sym_name[i]];
+		Generate::WriteBytes(sym, sizeof(Elf32_Sym));
+	}
+
+	Generate::WriteBytes(str_tab, strtab_size);
+
+	for (int i = 0; i < rel_text_tab.size(); i++) {
+		Elf32_Rel* rel = rel_text_tab[i];
+		Generate::WriteBytes(rel, sizeof(Elf32_Rel));
+		// delete rel;
+	}
+
+	for (int i = 0; i < rel_data_tab.size(); i++) {
+		Elf32_Rel* rel = rel_data_tab[i];
+		Generate::WriteBytes(rel, sizeof(Elf32_Rel));
+		// delete rel;
+	}
+
+
+}
+
+void Elf_File::WriteElf(string name,int data_length,bool scan) {
+	Generate::Over();
+	Generate::Init(name + ".o");
+	AssembleObj(data_length);
+	Generate::WriteBytes(&ehdr, ehdr.e_ehsize);
+	fin = fopen((name + ".t").c_str(), "r");
+	char buffer[1024] = { 0 };
+	int read_length = -1;
+	while (read_length != 0) {
+		read_length = fread(buffer, 1, 1024, fin);
+		Generate::WriteBytes(&buffer, read_length);
+	}
+	PaddingSeg(TEXT_SEG, DATA_SEG);
+	Table::Write(scan);
+	PaddingSeg(DATA_SEG, BSS_SEG);
+	WriteElfTail();
+
+}

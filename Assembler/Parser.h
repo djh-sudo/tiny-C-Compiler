@@ -14,13 +14,12 @@ private:
 	enum symbol token;
 	string cur_seg;
 	int data_length;
-	bool scan_first;
 	VarRecord* rel_var;
 	Inst instructure;
 	Lexer lexer;
 public:
 	// Parser();
-	void Init();
+	void Init(const char* file_name);
 	bool NextToken();
 	bool Match(symbol t);
 	void Program();
@@ -37,5 +36,6 @@ public:
 	void Addr();
 	void RegAddr(symbol base_reg, const int type);
 	void RegAddrTail(symbol base_reg, const int type, symbol sign);
+	void Over();
 };
 

@@ -23,6 +23,7 @@ public:
 	VarRecord(string name,bool externed,string cur_seg_name);
 	VarRecord(string name, int addr, string cur_seg_name);
 	VarRecord(string name, int time, int len_type, int content[], int content_len, string cur_seg_name);
+	void Write(bool scan);
 	~VarRecord();
 	// default API
 	int get_current_addr();
@@ -46,6 +47,9 @@ public:
 	static void AddVar(VarRecord* var);
 	static VarRecord* GetVar(string name, string cur_seg_name);
 	static void SwtichSeg(int& data_len, string& cur_seg_name, string seg_name);
+	static void ExportSym();
+	static void Write(bool scan);
+	static void Over();
 	// default API
 	static void set_scan_first(bool scan);
 	static bool get_scan_first();
@@ -98,7 +102,7 @@ public:
 	Inst();
 	void Init();
 	void SetDisp(int disp, int len);
-	void WriteDisp();
+	void WriteDisp(bool scan);
 	// default API
 	int get_imm32();
 	int get_disp();

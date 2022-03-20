@@ -1,12 +1,13 @@
-#include "Lexer.h"
+#include "Parser.h"
+#include "Generate.h"
+
 
 int main() {
-	Lexer lexer;
-	bool res = lexer.Init("./ass_test/common.s");
-	if (res) {
-		lexer.set_flag(true);
-		while (lexer.GetSym());
-		lexer.over();
-	}
+	Generate::Init("./ass_test/common.t");
+	Elf_File::Init();
+	Parser parser;
+	parser.Init("./ass_test/common.s");
+	parser.Program();
+	parser.Over();
 	return 0;
 }
