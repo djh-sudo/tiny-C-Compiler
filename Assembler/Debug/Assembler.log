@@ -1,9 +1,4 @@
-﻿  Generate.cpp
-E:\B18080516\tiny-C-Compiler\Assembler\Generate.h(30,3): warning C4838:  从“int”转换到“unsigned char”需要收缩转换
-E:\B18080516\tiny-C-Compiler\Assembler\Generate.h(30,10): warning C4838:  从“int”转换到“unsigned char”需要收缩转换
-E:\B18080516\tiny-C-Compiler\Assembler\Generate.h(30,17): warning C4838:  从“int”转换到“unsigned char”需要收缩转换
-E:\B18080516\tiny-C-Compiler\Assembler\Generate.h(30,24): warning C4838:  从“int”转换到“unsigned char”需要收缩转换
-E:\B18080516\tiny-C-Compiler\Assembler\Generate.h(30,31): warning C4838:  从“int”转换到“unsigned char”需要收缩转换
-E:\B18080516\tiny-C-Compiler\Assembler\Generate.h(30,38): warning C4838:  从“int”转换到“unsigned char”需要收缩转换
-E:\B18080516\tiny-C-Compiler\Assembler\Generate.h(30,45): warning C4838:  从“int”转换到“unsigned char”需要收缩转换
+﻿  Parser.cpp
+  main.cpp
+  正在生成代码...
   Assembler.vcxproj -> E:\B18080516\tiny-C-Compiler\Assembler\Debug\Assembler.exe

@@ -111,7 +111,7 @@ void Elf_File::AddShdr(string name, int size,int data_length) {
 		AddShdr(name, SHT_PROGBITS, SHF_ALLOC | SHF_WRITE, 0, offset, size, 0, 0, 4, 0);
 	}
 	else if (name == ".bss") {
-		AddShdr(name, SHT_PROGBITS, SHF_ALLOC | SHF_WRITE, 0, offset, size, 0, 0, 4, 0);
+		AddShdr(name, SHT_NOBITS, SHF_ALLOC | SHF_WRITE, 0, offset, size, 0, 0, 4, 0);
 	}
 	return;
 }
@@ -137,7 +137,8 @@ void Elf_File::AddShdr(string sh_name, Elf32_Word sh_type, Elf32_Word sh_flag,
 
 
 void Elf_File::AddSym(string name, Elf32_Sym* s) {
-	Elf32_Sym* sym = sym_tab[name] = new Elf32_Sym();
+	sym_tab[name] = new Elf32_Sym();
+	Elf32_Sym* sym = sym_tab[name];
 	if (name == "") {
 		sym->st_name = 0;
 		sym->st_value = 0;
@@ -322,6 +323,7 @@ void Elf_File::AssembleObj(int data_length) {
 	}
 	cur_offset += strtab_size;
 	AddShdr(REL_TEXT_SEG, SHT_REL, 0, 0, cur_offset, rel_text_tab.size() * 8, GetSegIndex(SYM_SEG), GetSegIndex(TEXT_SEG), 1, 8);
+	
 	cur_offset += rel_text_tab.size() * 8;
 	AddShdr(REL_DATA_SEG, SHT_REL, 0, 0, cur_offset, rel_data_tab.size() * 8, GetSegIndex(SYM_SEG), GetSegIndex(DATA_SEG), 1, 8);
 
@@ -333,31 +335,34 @@ void Elf_File::AssembleObj(int data_length) {
 
 void Elf_File::WriteElfTail() {
 	Generate::WriteBytes(sh_str_tab, shstrtab_size);
+
+	Elf32_Shdr* sh = new Elf32_Shdr();
 	for (int i = 0; i < shdr_name.size(); i++) {
-		Elf32_Shdr* sh = shdr_tab[shdr_name[i]];
+		sh = shdr_tab[shdr_name[i]];
 		Generate::WriteBytes(sh, ehdr.e_shentsize);
 	}
+	delete sh;
 
+	Elf32_Sym* sym = new Elf32_Sym();
 	for (int i = 0; i < sym_name.size(); i++) {
-		Elf32_Sym* sym = sym_tab[sym_name[i]];
+		sym = sym_tab[sym_name[i]];
 		Generate::WriteBytes(sym, sizeof(Elf32_Sym));
 	}
+	delete sym;
 
 	Generate::WriteBytes(str_tab, strtab_size);
 
+	Elf32_Rel* rel = new Elf32_Rel();
 	for (int i = 0; i < rel_text_tab.size(); i++) {
-		Elf32_Rel* rel = rel_text_tab[i];
+		rel = rel_text_tab[i];
 		Generate::WriteBytes(rel, sizeof(Elf32_Rel));
-		// delete rel;
 	}
 
 	for (int i = 0; i < rel_data_tab.size(); i++) {
-		Elf32_Rel* rel = rel_data_tab[i];
+		rel = rel_data_tab[i];
 		Generate::WriteBytes(rel, sizeof(Elf32_Rel));
-		// delete rel;
 	}
-
-
+	delete rel;
 }
 
 void Elf_File::WriteElf(string name,int data_length,bool scan) {
@@ -365,7 +370,7 @@ void Elf_File::WriteElf(string name,int data_length,bool scan) {
 	Generate::Init(name + ".o");
 	AssembleObj(data_length);
 	Generate::WriteBytes(&ehdr, ehdr.e_ehsize);
-	fin = fopen((name + ".t").c_str(), "r");
+	fin = fopen((name + ".t").c_str(), "rb");
 	char buffer[1024] = { 0 };
 	int read_length = -1;
 	while (read_length != 0) {

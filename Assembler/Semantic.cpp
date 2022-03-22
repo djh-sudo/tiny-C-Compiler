@@ -23,7 +23,8 @@ VarRecord::VarRecord(string name, bool externed,string cur_seg_name) {
 VarRecord::VarRecord(string name, int addr,string cur_seg_name) {
 	this->sym_name = name;
 	this->is_equ = true;
-	this, seg_name = cur_seg_name;
+	this->is_externed = false;
+	this->seg_name = cur_seg_name;
 	this->addr = addr;
 	this->time = 0;
 	this->len_type = 0;
@@ -44,12 +45,14 @@ VarRecord::VarRecord(string name, int time, int len_type,
 	for (int i = 0; i < content_len; i++) {
 		this->sym_array[i] = content[i];
 	}
+	this->is_externed = false;
+	current_addr += time * len_type * content_len;
 }
 
 void VarRecord::Write(bool scan) {
 	for (int i = 0; i < time; i++) {
 		for (int j = 0; j < sym_length; j++) {
-			Generate::WriteBytes(sym_array[i], len_type, scan);
+			Generate::WriteBytes(sym_array[j], len_type, scan);
 		}
 	}
 }
@@ -120,7 +123,7 @@ void Table::AddVar(VarRecord* var) {
 		var_map[var->get_sym_name()] = var;
 	}
 
-	if (var->get_times() != 0 && var->get_seg_name() == ".data") {
+	if (var->get_times() != 0 && var->get_seg_name() == DATA_SEG) {
 		def_labs.push_back(var);
 	}
 }
@@ -163,6 +166,7 @@ void Table::ExportSym() {
 void Table::Write(bool scan) {
 	for (int i = 0; i < def_labs.size(); i++) {
 		def_labs[i]->Write(scan);
+		cout << def_labs[i]->get_sym_name() << " " << def_labs[i]->get_sym_length() << endl;
 	}
 }
 

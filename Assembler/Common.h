@@ -57,8 +57,9 @@
 #define dd "dd"
 
 #define IMMD 1
-#define MEMO 2
-#define REGS 3
+#define REGS 2
+#define MEMO 3
+
 
 #define LAB_HEAD "@lab_"
 #define IF_HEAD "@if_"

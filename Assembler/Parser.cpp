@@ -7,6 +7,7 @@ void Parser::Init(const char* file_name) {
 	this->wait = false;
 	this->data_length = 0;
 	this->cur_seg = "";
+	this->file_name = file_name;
 	this->instructure.Init();
 	lexer.Init(file_name);
 }
@@ -26,7 +27,7 @@ bool Parser::NextToken() {
 					// table
 					lexer.Over();
 					lexer = Lexer();
-					lexer.Init("./ass_test/common.s");
+					lexer.Init(file_name.c_str());
 					Table::SwtichSeg(data_length, cur_seg, lexer.get_id());
 					Table::set_scan_first(false);
 					continue;
@@ -180,8 +181,8 @@ void Parser::Type(int content[], int& content_len, int len) {
 				if (!var->get_is_equ()) {
 					Elf_File::AddReloc(cur_seg, VarRecord::current_addr + content_len * len, name, R_386_32);
 				}
-				content_len++;
 			}
+			content_len++;
 			break;
 		}
 		default: {
@@ -216,7 +217,7 @@ void Parser::Instruct() {
 		NextToken();
 		if (Match(comma)) {
 			Operate(reg_num, src_type, len);
-			Generate::Generate2Op(op, des_type, src_type, len, instructure, Table::get_scan_first(), rel_var, cur_seg);
+			Generate::Generate2Op(op, des_type, src_type, len, instructure, Table::get_scan_first(), &rel_var, cur_seg);
 		}
 		else {
 			Generate::Error(comma_lost);
@@ -227,7 +228,7 @@ void Parser::Instruct() {
 		int type = 0;
 		int reg_num = 0;
 		Operate(reg_num, type, len);
-		Generate::Generate1Op(op, type, len, instructure, Table::get_scan_first(), rel_var, cur_seg);
+		Generate::Generate1Op(op, type, len, instructure, Table::get_scan_first(), &rel_var, cur_seg);
 	}
 	else if (token == rev_ret) {
 		symbol op = token;
@@ -358,7 +359,7 @@ void Parser::Addr(){
 
 void Parser::RegAddr(symbol base_reg, const int type){
 	NextToken();
-	if (token == addi || token == subs) {
+	if (token == addi || token == subs) {	
 		RegAddrTail(base_reg, type, token);
 	}
 	else {
@@ -419,7 +420,12 @@ void Parser::RegAddrTail(symbol base_reg, const int type, symbol sign){
 }
 
 void Parser::Over() {
-	Elf_File::WriteElf("./ass_test/common", data_length, Table::get_scan_first());
+	Elf_File::WriteElf("./ass_test/test", data_length, Table::get_scan_first());
+	lexer.Over();
+	Generate::Over();
+}
+
+Parser::~Parser() {
 	lexer.Over();
 	Generate::Over();
 }

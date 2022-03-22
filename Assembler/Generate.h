@@ -23,7 +23,7 @@ static unsigned char op2code[] = {
 		0x00,0x00,0x00,0x00,0x00,0x8d,0x00,0x00  // lea
 };
 
-static unsigned char op1code[] = {
+static unsigned short op1code[] = {
 	/*  call  int imul idiv  neg  inc  dec jmp  */
 		0xe8,0xcd,0xf7,0xf7,0xf7,0x40,0x48,0xe9,
 	/*    je     jg     jl    jge     jle   jne    jna */
@@ -51,9 +51,9 @@ public:
 	static void WriteBytes(int value, int len, bool scan);
 	static void WriteBytes(int value, int len);
 	static void WriteBytes(const void* buffer, size_t len);
-	static bool HandleRelocation(int type, bool scan, VarRecord* rel, string cur_seg);
-	static void Generate2Op(symbol op, int des, int src, int len, Inst instructure, bool scan, VarRecord* rel, string cur_seg);
-	static void Generate1Op(symbol op, int op_type, int len, Inst instructure, bool scan, VarRecord* relo, string cur_seg);
+	static bool HandleRelocation(int type, bool scan, VarRecord** rel, string cur_seg);
+	static void Generate2Op(symbol op, int des, int src, int len, Inst instructure, bool scan, VarRecord** rel, string cur_seg);
+	static void Generate1Op(symbol op, int op_type, int len, Inst instructure, bool scan, VarRecord** relo, string cur_seg);
 	static void Generate0Op(symbol op, bool scan);
 	static void Over();
 	static void Error(error_c code);

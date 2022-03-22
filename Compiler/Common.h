@@ -30,7 +30,7 @@ using namespace std;
 #define STR2LONG "@str2long"
 #define PROC_BUF "@procBuf"
 #define STR2LONG_DATA_LEN "@str2long_data_len"
-#define STR2LONG_DATA "@dtr2long_data"
+#define STR2LONG_DATA "@str2long_data"
 #define BUFFER "@buffer"
 #define BUFFER_LEN "@buffer_len"
 #define CAL_BUF_LEN "@cal_buf_len"

@@ -17,8 +17,9 @@ private:
 	VarRecord* rel_var;
 	Inst instructure;
 	Lexer lexer;
+	string file_name;
 public:
-	// Parser();
+	~Parser();
 	void Init(const char* file_name);
 	bool NextToken();
 	bool Match(symbol t);

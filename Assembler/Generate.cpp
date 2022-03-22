@@ -10,7 +10,7 @@ int Generate::total_length = 0;
 int Generate::error_number = 0;
 int Generate::line_number = 0;
 bool Generate::Init(string file_name) {
-	fout = fopen(file_name.c_str(), "w");
+	fout = fopen(file_name.c_str(), "wb");
 	if (fout != nullptr) {
 		cout << "file[ " << file_name << "] open successfully!" << endl;
 		return true;
@@ -25,9 +25,9 @@ bool Generate::Init(string file_name) {
 void Generate::WriteModRM(ModRM modrm,bool scan){
 	if (modrm.get_mod() != -1) {
 		unsigned char mrm = (unsigned char)(
-			(modrm.get_mod() & 3) << 6 +
-			(modrm.get_reg() & 7) << 3 +
-			 modrm.get_rm() & 7
+			((modrm.get_mod() & 3) << 6) +
+			((modrm.get_reg() & 7) << 3) +
+			(modrm.get_rm() & 7)
 			);
 		WriteBytes(mrm, 1,scan);
 	}
@@ -36,8 +36,8 @@ void Generate::WriteModRM(ModRM modrm,bool scan){
 void Generate::WriteSIB(SIB sib, bool scan){
 	if (sib.get_scale() != -1){
 		unsigned char s = (unsigned char)(
-			(sib.get_scale() & 3) << 6 +
-			(sib.get_index() & 7) << 3 +
+			((sib.get_scale() & 3) << 6) +
+			((sib.get_index() & 7) << 3) +
 			(sib.get_base() & 7)
 			);
 		WriteBytes(s, 1, scan);
@@ -48,44 +48,46 @@ void Generate::WriteBytes(int value, int len, bool scan){
 	VarRecord::current_addr += len;
 	if (!scan) {
 		fwrite(&value, len, 1, fout);
+		fflush(fout);
 	}
 	return;
 }
 
 void Generate::WriteBytes(int value, int len) {
 	fwrite(&value, len, 1, fout);
+	fflush(fout);
 }
 
 void Generate::WriteBytes(const void* buffer, size_t len) {
 	fwrite(buffer, len, 1, fout);
+	fflush(fout);
 }
 
-bool Generate::HandleRelocation(int type, bool scan, VarRecord* rel,string cur_seg) {
-	if (scan || rel == nullptr) {
-		rel = nullptr;
+bool Generate::HandleRelocation(int type, bool scan, VarRecord** rel,string cur_seg) {
+	if (scan || (*rel) == nullptr) {
+		(*rel) = nullptr;
 		return false;
 	}
 	bool flag = false;
 	if (type == R_386_32) {
-		if (!rel->get_is_equ()) {
+		if (!(*rel)->get_is_equ()) {
 			//obj
-			Elf_File::AddReloc(cur_seg, VarRecord::current_addr, rel->get_sym_name(), type);
+			Elf_File::AddReloc(cur_seg, VarRecord::current_addr, (*rel)->get_sym_name(), type);
 			flag = true;
 		}
 	}
 	else if (type == R_386_PC32) {
-		if (rel->get_is_externed()) {
+		if ((*rel)->get_is_externed()) {
 			// obj
-			Elf_File::AddReloc(cur_seg, VarRecord::current_addr, rel->get_sym_name(), type);
+			Elf_File::AddReloc(cur_seg, VarRecord::current_addr, (*rel)->get_sym_name(), type);
 			flag = true;
 		}
 	}
-	rel = nullptr;
+	(*rel) = nullptr;
 	return flag;
-
 }
 
-void Generate::Generate2Op(symbol op, int des, int src, int len, Inst instructure, bool scan, VarRecord* rel, string cur_seg) {
+void Generate::Generate2Op(symbol op, int des, int src, int len, Inst instructure, bool scan, VarRecord** rel, string cur_seg) {
 	int index = -1;
 	if (des == IMMD) {
 		Error(immd_non_des);
@@ -169,16 +171,16 @@ void Generate::Generate2Op(symbol op, int des, int src, int len, Inst instructur
 	}
 }
 
-void Generate::Generate1Op(symbol op, int op_type, int len,  Inst instructure, bool scan, VarRecord* relo, string cur_seg) {
+void Generate::Generate1Op(symbol op, int op_type, int len,  Inst instructure, bool scan, VarRecord** relo, string cur_seg) {
 	unsigned char ex_char;
 	unsigned short int op_code = op1code[op - rev_call];
 	if (op == rev_call || op >= rev_jmp && op <= rev_jna) {
 		if (op == rev_call || op == rev_jmp) {
-			WriteBytes(op, 1, scan);
+			WriteBytes(op_code, 1, scan);
 		}
 		else {
-			WriteBytes(op >> 8, 1, scan);
-			WriteBytes(op, 1, scan);
+			WriteBytes((op_code >> 8), 1, scan);
+			WriteBytes(op_code, 1, scan);
 		}
 		int rel = instructure.get_imm32() - (VarRecord::current_addr + 4);
 		bool ret_flag = HandleRelocation(R_386_PC32, scan, relo,cur_seg);
