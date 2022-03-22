@@ -34,3 +34,5 @@
 # other
 Compiler/.vs/
 Compiler/Debug/
+Assembler/Debug/
+.vs/
