@@ -166,7 +166,6 @@ void Table::ExportSym() {
 void Table::Write(bool scan) {
 	for (int i = 0; i < def_labs.size(); i++) {
 		def_labs[i]->Write(scan);
-		cout << def_labs[i]->get_sym_name() << " " << def_labs[i]->get_sym_length() << endl;
 	}
 }
 
@@ -177,6 +176,8 @@ void Table::Over() {
 		delete vi->second;
 	}
 	var_map.clear();
+	def_labs.clear();
+	def_labs.shrink_to_fit();
 }
 
 void Table::set_scan_first(bool scan) {

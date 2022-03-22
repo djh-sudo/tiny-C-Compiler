@@ -67,6 +67,6 @@ public:
 	static void AssembleObj(int data_length);
 	static void WriteElfTail();
 	static void WriteElf(string name, int data_length, bool scan);
-
+	static void Over();
 };
 

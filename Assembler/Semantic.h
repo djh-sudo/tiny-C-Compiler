@@ -38,9 +38,10 @@ public:
 };
 
 class Table {
-private:
+public:
 	static unordered_map<string, VarRecord*>var_map;
 	static vector<VarRecord*>def_labs;
+private:
 	static bool scan_first;
 public:
 	static bool HasName(string name);

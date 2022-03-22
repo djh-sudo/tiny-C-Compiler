@@ -76,6 +76,8 @@ void Elf_File::Init() {
 	sym_name.clear();
 	rel_data_tab.clear();
 	rel_text_tab.clear();
+	sym_tab.clear();
+
 	AddShdr("", 0, 0, 0, 0, 0, 0, 0, 0, 0);
 	AddSym("", nullptr);
 }
@@ -336,33 +338,27 @@ void Elf_File::AssembleObj(int data_length) {
 void Elf_File::WriteElfTail() {
 	Generate::WriteBytes(sh_str_tab, shstrtab_size);
 
-	Elf32_Shdr* sh = new Elf32_Shdr();
 	for (int i = 0; i < shdr_name.size(); i++) {
-		sh = shdr_tab[shdr_name[i]];
+		Elf32_Shdr* sh = shdr_tab[shdr_name[i]];
 		Generate::WriteBytes(sh, ehdr.e_shentsize);
 	}
-	delete sh;
 
-	Elf32_Sym* sym = new Elf32_Sym();
 	for (int i = 0; i < sym_name.size(); i++) {
-		sym = sym_tab[sym_name[i]];
+		Elf32_Sym* sym = sym_tab[sym_name[i]];
 		Generate::WriteBytes(sym, sizeof(Elf32_Sym));
 	}
-	delete sym;
 
 	Generate::WriteBytes(str_tab, strtab_size);
 
-	Elf32_Rel* rel = new Elf32_Rel();
 	for (int i = 0; i < rel_text_tab.size(); i++) {
-		rel = rel_text_tab[i];
+		Elf32_Rel*  rel = rel_text_tab[i];
 		Generate::WriteBytes(rel, sizeof(Elf32_Rel));
 	}
 
 	for (int i = 0; i < rel_data_tab.size(); i++) {
-		rel = rel_data_tab[i];
+		Elf32_Rel* rel = rel_data_tab[i];
 		Generate::WriteBytes(rel, sizeof(Elf32_Rel));
 	}
-	delete rel;
 }
 
 void Elf_File::WriteElf(string name,int data_length,bool scan) {
@@ -381,5 +377,41 @@ void Elf_File::WriteElf(string name,int data_length,bool scan) {
 	Table::Write(scan);
 	PaddingSeg(DATA_SEG, BSS_SEG);
 	WriteElfTail();
+}
 
+void Elf_File::Over() {
+	unordered_map<string, Elf32_Shdr*>::iterator vi, vend;
+	vend = shdr_tab.end();
+	for (vi = shdr_tab.begin(); vi != vend; vi++) {
+		delete vi->second;
+	}
+	shdr_tab.clear();
+
+	shdr_name.clear();
+	shdr_name.shrink_to_fit();
+	
+	unordered_map < string, Elf32_Sym* > ::iterator si, send;
+	send = sym_tab.end();
+	for (si = sym_tab.begin(); si != send; si++) {
+			delete si->second;
+	}
+	sym_tab.clear();
+
+	for (int i = 0; i < rel_tab.size(); i++) {
+		delete rel_tab[i];
+	}
+	rel_tab.clear();
+	rel_tab.shrink_to_fit();
+	
+	for (int i = 0; i < rel_data_tab.size(); i++) {
+		delete rel_data_tab[i];
+	}
+	rel_data_tab.clear();
+	rel_data_tab.shrink_to_fit();
+
+	for (int i = 0; i < rel_text_tab.size(); i++) {
+		delete rel_text_tab[i];
+	}
+	rel_text_tab.clear();
+	rel_text_tab.shrink_to_fit();
 }

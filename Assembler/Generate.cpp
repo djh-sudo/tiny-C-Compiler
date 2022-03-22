@@ -10,9 +10,13 @@ int Generate::total_length = 0;
 int Generate::error_number = 0;
 int Generate::line_number = 0;
 bool Generate::Init(string file_name) {
-	fout = fopen(file_name.c_str(), "wb");
+	line_number = 0;
+	error_number = 0;
+	total_length = 0;
+	fout = nullptr;
+	fout = fopen((file_name).c_str(), "wb");
 	if (fout != nullptr) {
-		cout << "file[ " << file_name << "] open successfully!" << endl;
+		cout << "file[ " << file_name << "] open[wb] successfully!" << endl;
 		return true;
 	}
 	else {

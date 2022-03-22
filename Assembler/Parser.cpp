@@ -9,7 +9,12 @@ void Parser::Init(const char* file_name) {
 	this->cur_seg = "";
 	this->file_name = file_name;
 	this->instructure.Init();
-	lexer.Init(file_name);
+	VarRecord::current_addr = 0x00000000;
+	Table::var_map = unordered_map<string, VarRecord*>();
+	Table::def_labs = vector<VarRecord*>();
+	Table::set_scan_first(true);
+	if (!lexer.Init(file_name))
+		exit(1);
 }
 
 bool Parser::NextToken() {
@@ -420,12 +425,23 @@ void Parser::RegAddrTail(symbol base_reg, const int type, symbol sign){
 }
 
 void Parser::Over() {
-	Elf_File::WriteElf("./ass_test/test", data_length, Table::get_scan_first());
+	Elf_File::WriteElf(file_name, data_length, Table::get_scan_first());
 	lexer.Over();
 	Generate::Over();
+	Table::Over();
+	Elf_File::Over();
+
+	cout << "error number:" << Generate::error_number << endl;
+	if (Generate::error_number == 0) {
+		cout << "assemble ["<< file_name<<"] successfully!" << endl;
+	}
+	else {
+		cout << "assmble [" << file_name << "] failed!" << endl;
+	}
 }
 
 Parser::~Parser() {
 	lexer.Over();
 	Generate::Over();
+	Elf_File::Over();
 }

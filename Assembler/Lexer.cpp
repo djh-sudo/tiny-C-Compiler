@@ -26,11 +26,11 @@ Lexer::~Lexer() {
 bool Lexer::Init(const char* file_path) {
 	fin = fopen(file_path, "r");
 	if (fin) {
-		cout << "file [" << file_path << "] open successfully!" << endl;
+		cout << "file [" << file_path << "] open[r] successfully!" << endl;
 		return true;
 	}
 	else {
-		cout << "file [" << file_path << "] open failed!" << endl;
+		cout << "file [" << file_path << "] open failed! not exist?" << endl;
 		return false;
 	}
 }
