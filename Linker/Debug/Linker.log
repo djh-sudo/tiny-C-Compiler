@@ -1,0 +1,15 @@
+﻿  Elf_File.cpp
+E:\B18080516\tiny-C-Compiler\Linker\Elf_File.cpp(47,1): warning C4996:  'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+E:\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(208): message :  参见“fopen”的声明
+E:\B18080516\tiny-C-Compiler\Linker\Elf_File.cpp(136,1): warning C4996:  'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+E:\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(208): message :  参见“fopen”的声明
+E:\B18080516\tiny-C-Compiler\Linker\Elf_File.cpp(152,20): warning C4018:  “<”: 有符号/无符号不匹配
+E:\B18080516\tiny-C-Compiler\Linker\Elf_File.cpp(163,20): warning C4018:  “<”: 有符号/无符号不匹配
+E:\B18080516\tiny-C-Compiler\Linker\Elf_File.cpp(235,22): warning C4018:  “<”: 有符号/无符号不匹配
+E:\B18080516\tiny-C-Compiler\Linker\Elf_File.cpp(248,21): warning C4018:  “<”: 有符号/无符号不匹配
+E:\B18080516\tiny-C-Compiler\Linker\Elf_File.cpp(254,21): warning C4018:  “<”: 有符号/无符号不匹配
+E:\B18080516\tiny-C-Compiler\Linker\Elf_File.cpp(231,1): warning C4996:  'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+E:\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(208): message :  参见“fopen”的声明
+E:\B18080516\tiny-C-Compiler\Linker\Elf_File.cpp(244,1): warning C4996:  'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+E:\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(208): message :  参见“fopen”的声明
+  Linker.vcxproj -> E:\B18080516\tiny-C-Compiler\Linker\Debug\Linker.exe
