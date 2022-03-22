@@ -19,29 +19,29 @@ main:
 	int 128
 	call @procBuf
 	mov [ebp-4],eax
-	push 1
+	push 2
 	push -1
 	mov eax,[@s_esp]
 	mov [@s_esp],esp
 	mov esp,eax
-	mov eax,@str_1_len
+	mov eax,@str_2_len
 	sub esp,1
 	mov [esp],al
 	mov [ebp-12],esp
 	cmp eax,0
-	je @lab_cpystr2_exit_4
-	mov ecx,@str_1_len
+	je @lab_cpystr2_exit_30
+	mov ecx,@str_2_len
 	dec ecx
-	mov esi,@str_1
-@lab_cpystr2_3:
+	mov esi,@str_2
+@lab_cpystr2_29:
 	cmp ecx,-1
-	je @lab_cpystr2_exit_4
+	je @lab_cpystr2_exit_30
 	mov dl,[esi+ecx]
 	sub esp,1
 	mov [esp],dl
 	dec ecx
-	jmp @lab_cpystr2_3
-@lab_cpystr2_exit_4:
+	jmp @lab_cpystr2_29
+@lab_cpystr2_exit_30:
 	mov eax,[@s_esp]
 	mov [@s_esp],esp
 	mov esp,eax
@@ -64,13 +64,13 @@ main:
 	mov [ebp-16],esp
 	mov edi,0
 	cmp eax,0
-	jge @lab_numsign2_exit_11
-@lab_numsign2_10:
+	jge @lab_numsign2_exit_37
+@lab_numsign2_36:
 	neg eax
 	mov edi,1
-@lab_numsign2_exit_11:
+@lab_numsign2_exit_37:
 	mov ebx,10
-@lab_num2str2_8:
+@lab_num2str2_34:
 	mov edx,0
 	idiv ebx
 	mov cl,[esi]
@@ -80,16 +80,16 @@ main:
 	add dl,48
 	mov [esp],dl
 	cmp eax,0
-	jne @lab_num2str2_8
+	jne @lab_num2str2_34
 	cmp edi,0
-	je @lab_num2str2_exit_9
+	je @lab_num2str2_exit_35
 	sub esp,1
 	mov ecx,45
 	mov [esp],cl
 	mov cl,[esi]
 	inc cl
 	mov [esi],cl
-@lab_num2str2_exit_9:
+@lab_num2str2_exit_35:
 	mov eax,[@s_esp]
 	mov [@s_esp],esp
 	mov esp,eax

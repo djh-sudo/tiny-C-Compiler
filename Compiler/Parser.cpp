@@ -20,7 +20,8 @@ Parser::Parser(){
 void Parser::Init(const char* file_name) {
 	bool result = lexer.Init(file_name);
 	if (result) {
-		cout << "Lexer initial successfully!" << endl;
+		this->file_name = file_name;
+		cout << endl << "Lexer initial successfully!" << endl;
 		result = Generator::GenerateComm();
 		if (result) {
 			int index = string(file_name).find_last_of(".");
@@ -78,10 +79,10 @@ void Parser::Program() {
 		if (syntax_error == 0 && lexer.get_error_number() == 0
 			&& !Generator::error) {
 			VarTable::over();
-			cout << "compiler successfully! " << endl;
+			cout << "compiler " << file_name << " successfully! " << endl;
 		}
 		else {
-			cout << "compiler failed!" << endl;
+			cout << "compiler " << file_name << " failed!" << endl;
 		}
 		cout << "lexical error:" << lexer.get_error_number() << endl;
 		cout << "syntax error:" << syntax_error << endl;

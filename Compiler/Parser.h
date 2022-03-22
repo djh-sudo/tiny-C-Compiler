@@ -21,6 +21,7 @@ private:
 	int if_id;
 	int for_id;
 	bool ident_only;
+	string file_name;
 
 public:
 	Parser();
