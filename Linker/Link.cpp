@@ -276,6 +276,7 @@ void Link::AssemblyObj() {
 			filesz, seg_list[name]->get_size(), flags, MEM_ALIGN);
 		cur_offset = seg_list[name]->get_offset();
 
+
 		Elf32_Word sh_type = SHT_PROGBITS;
 		Elf32_Word sh_flags = SHF_ALLOC | SHF_WRITE;
 		Elf32_Word sh_align = DISC_ALIGN;
@@ -284,7 +285,7 @@ void Link::AssemblyObj() {
 			sh_flags = SHF_ALLOC | SHF_EXECINSTR;
 			sh_align = TEXT_ALIGN;
 		}
-		obj.AddShdr(name, sh_type, flags, seg_list[name]->get_base_addr(),
+		obj.AddShdr(name, sh_type, sh_flags, seg_list[name]->get_base_addr(),
 			seg_list[name]->get_offset(), seg_list[name]->get_size(), SHN_UNDEF, 0, sh_align, 0);
 	}
 	obj.ehdr.e_phoff = sizeof(Elf32_Ehdr);
@@ -329,7 +330,7 @@ void Link::AssemblyObj() {
 	obj.ehdr.e_shnum = 4 + seg_name.size();
 	cur_offset += sizeof(Elf32_Shdr) * (obj.ehdr.e_shnum);
 
-	obj.AddShdr(SYM_SEG, SHT_STRTAB, 0, 0, cur_offset, 
+	obj.AddShdr(SYM_SEG, SHT_SYMTAB, 0, 0, cur_offset, 
 			   (1 + sym_def.size()) * sizeof(Elf32_Sym), 0, 0, 1, sizeof(Elf32_Sym));
 	obj.shdr_tab[SYM_SEG]->sh_link = obj.GetSegIndex(SYM_SEG) + 1;
 
