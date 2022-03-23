@@ -1,6 +1,6 @@
 @cd ./compiler
 @echo updating cc ...
-@call make cc
+@call make
 @echo update cc succefully!
 @cd ..
 @cd ./Assembler
@@ -13,3 +13,6 @@
 @call make
 @echo update linker successfully!
 @cd ..
+@echo updating main-control
+@call make
+@echo update over!

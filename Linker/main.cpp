@@ -24,11 +24,19 @@ int main(int argc, char* argv[]) {
 			}
 			linker.AddElf(argv[i]);
 		}
-		if (i < argc) {
-			linker.Excute(argv[i]);
-		}
-		else {
-			linker.Excute("a.out");
+		if (argc >= 3) {
+			if (i < argc) {
+				linker.Excute(argv[i]);
+			}
+			else {
+				string prefix = argv[2];
+				int index = prefix.find_last_of("\\");
+				if (index == string::npos) {
+					index = prefix.find_last_of("/");
+				}
+				prefix = prefix.substr(0, index) + "\\a.out";
+				linker.Excute(prefix.c_str());
+			}
 		}
 	}
 	else {

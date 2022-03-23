@@ -867,8 +867,8 @@ void Generator::GenerateOutput(VarRecord* p, int& var_number, FunRecord& fun) {
 	syscall(128);
 }
 
-bool Generator::GenerateComm() {
-	fout = fopen("./common.s", "w");
+bool Generator::GenerateComm(string output) {
+	fout = fopen(output.c_str(), "w");
 	if (!fout) {
 		cout << "generate common.s failed!" << endl;
 		return false;

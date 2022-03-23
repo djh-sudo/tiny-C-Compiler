@@ -55,7 +55,7 @@ public:
 	static void GenerateOutput(VarRecord* p, int& var_number, FunRecord& fun);
 
 	static void SemanticError(error_c code, string info = "");
-	static bool GenerateComm();
+	static bool GenerateComm(string output);
 	// assemble instruction
 	static void subi(string des,string src);
 	static void subi(string des, int src);

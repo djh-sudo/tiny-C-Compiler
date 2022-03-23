@@ -22,7 +22,13 @@ void Parser::Init(const char* file_name) {
 	if (result) {
 		this->file_name = file_name;
 		cout << endl << "Lexer initial successfully!" << endl;
-		result = Generator::GenerateComm();
+		string output = file_name;
+		int index = output.find_last_of("/");
+		if (index == string::npos) {
+			index = output.find_last_of("\\");
+		}
+		output = output.substr(0,index) + "/common.s";
+		result = Generator::GenerateComm(output);
 		if (result) {
 			int index = string(file_name).find_last_of(".");
 			string output = string(file_name).substr(0, index);
