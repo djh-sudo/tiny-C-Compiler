@@ -156,6 +156,7 @@ int main(int argc, char* argv[]) {
 		int i = 2;
 		vector<string>file_names;
 		file_names.clear();
+		// getting current work dir
 		string pwd = getcwd(nullptr, 0);
 		string output_path = "";
 		char option = 0;
