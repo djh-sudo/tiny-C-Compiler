@@ -411,12 +411,16 @@ void Link::ExportElf(const char* file_name) {
 
 bool Link::Excute(const char*file_name) {
 	CollectInfo();
-	if (!CheckSymIsValid())
+	if (!CheckSymIsValid()) {
+		cout << "Linking failed!" << endl;
 		return false;
+	}
 	AllocAddr();
 	SymParser();
 	Relocation();
 	AssemblyObj();
 	ExportElf(file_name);
+	cout << "Linking successfully!" << endl;
+	cout << "output file >>> " << file_name << endl;
 	return true;
 }
