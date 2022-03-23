@@ -1,6 +1,6 @@
 #pragma once
 #include <cstdio>
-#include <string>
+#include <string.h>
 #include "Common.h"
 
 

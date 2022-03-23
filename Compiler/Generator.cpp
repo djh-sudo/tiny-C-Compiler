@@ -230,7 +230,7 @@ VarRecord* Generator::GenerateExp(VarRecord* f1, symbol op, VarRecord* f2, int& 
 			else if (f2->get_type() == rev_char) {
 				exchg_esp();
 				if (f2->get_local_addr() == 0) {
-					mov(eax, _("@var_" + f2->get_name()));
+					mov(eax, __("@var_" + f2->get_name()));
 				}
 				else {
 					if (f2->get_local_addr() < 0) {
@@ -241,10 +241,10 @@ VarRecord* Generator::GenerateExp(VarRecord* f1, symbol op, VarRecord* f2, int& 
 					}
 					subi(esp, 1);
 					mov(bl, 1);
-					mov(_(esp), bl);
+					mov(__(esp), bl);
 					mov(__ebp(tmp->get_local_addr()), esp);
 					subi(esp, 1);
-					mov(_(esp), al);
+					mov(__(esp), al);
 					exchg_esp();
 				}
 			}

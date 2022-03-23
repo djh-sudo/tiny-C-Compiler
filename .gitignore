@@ -35,4 +35,12 @@
 Compiler/.vs/
 Compiler/Debug/
 Assembler/Debug/
+Linker/Debug/
 .vs/
+*.user
+*.vcxproj
+*.filters
+*.
+# exclusive
+!make.exe
+!make.bat
