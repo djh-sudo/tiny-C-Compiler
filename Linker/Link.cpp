@@ -1,7 +1,9 @@
 #include <iostream>
+#include "string.h" 
+#include "elf.h"
 #include "Link.h"
 #include "Common.h"
-#include "elf.h"
+
 
 
 using namespace std;

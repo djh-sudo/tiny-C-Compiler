@@ -1,4 +1,5 @@
 #include <iostream>
+#include "string.h"
 #include "Parser.h"
 #include "Generate.h"
 
