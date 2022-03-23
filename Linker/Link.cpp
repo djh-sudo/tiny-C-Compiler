@@ -183,6 +183,8 @@ bool Link::CheckSymIsValid() {
 				continue;
 			if (sym_def[i]->name == sym_def[k]->name) {
 				// error
+				cout << "symname [" << sym_def[i]->name << "] in file <" << sym_def[i]->prov->file_name
+					 << "> conflict with file <" << sym_def[k]->prov->file_name << ">" << endl;
 				res_flag = false;
 			}
 		}
@@ -190,6 +192,7 @@ bool Link::CheckSymIsValid() {
 	}
 	if (start == nullptr) {
 		// error
+		cout << "Can't find excutive entry!" << endl;
 		res_flag = false;
 	}
 	for (int i = 0; i < all_sym.size(); i++) {
@@ -204,6 +207,14 @@ bool Link::CheckSymIsValid() {
 		}
 		if (all_sym[i]->prov == nullptr) {
 			// error
+			int info = all_sym[i]->recv->sym_tab[all_sym[i]->name]->st_info;
+			string type = "";
+			if (ELF32_ST_TYPE(info) == STT_OBJECT) type = "variable";
+			else if (ELF32_ST_TYPE(info) == STT_FUNC) type = "func";
+			else type = "symbol";
+			cout << type << " [" << all_sym[i]->name << "] is not defined in file <" 
+				 << all_sym[i]->recv->file_name << ">" << endl;
+
 			res_flag = false;
 		}
 	}

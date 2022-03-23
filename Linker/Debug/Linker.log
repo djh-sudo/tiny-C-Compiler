@@ -1,6 +1,38 @@
-﻿  main.cpp
-E:\B18080516\tiny-C-Compiler\Linker\main.cpp(16,1): warning C4996:  'strcmpi': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _strcmpi. See online help for details.
-E:\Windows Kits\10\Include\10.0.18362.0\ucrt\string.h(543): message :  参见“strcmpi”的声明
-E:\B18080516\tiny-C-Compiler\Linker\main.cpp(20,1): warning C4996:  'strcmpi': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _strcmpi. See online help for details.
-E:\Windows Kits\10\Include\10.0.18362.0\ucrt\string.h(543): message :  参见“strcmpi”的声明
+﻿  Link.cpp
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(46,20): warning C4018:  “<”: 有符号/无符号不匹配
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(66,20): warning C4018:  “<”: 有符号/无符号不匹配
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(86,20): warning C4018:  “<”: 有符号/无符号不匹配
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(132,20): warning C4018:  “<”: 有符号/无符号不匹配
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(144,20): warning C4018:  “<”: 有符号/无符号不匹配
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(146,21): warning C4018:  “<”: 有符号/无符号不匹配
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(173,20): warning C4018:  “<”: 有符号/无符号不匹配
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(180,25): warning C4018:  “<”: 有符号/无符号不匹配
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(198,20): warning C4018:  “<”: 有符号/无符号不匹配
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(199,21): warning C4018:  “<”: 有符号/无符号不匹配
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(228,20): warning C4018:  “<”: 有符号/无符号不匹配
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(234,20): warning C4018:  “<”: 有符号/无符号不匹配
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(240,20): warning C4018:  “<”: 有符号/无符号不匹配
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(248,20): warning C4018:  “<”: 有符号/无符号不匹配
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(250,21): warning C4018:  “<”: 有符号/无符号不匹配
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(279,20): warning C4018:  “<”: 有符号/无符号不匹配
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(304,36): warning C4267:  “=”: 从“size_t”转换到“Elf32_Half”，可能丢失数据
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(328,20): warning C4018:  “<”: 有符号/无符号不匹配
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(341,40): warning C4267:  “=”: 从“size_t”转换到“Elf32_Half”，可能丢失数据
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(350,20): warning C4018:  “<”: 有符号/无符号不匹配
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(369,20): warning C4018:  “<”: 有符号/无符号不匹配
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(315,1): warning C4996:  'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+E:\Windows Kits\10\Include\10.0.18362.0\ucrt\string.h(133): message :  参见“strcpy”的声明
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(319,1): warning C4996:  'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+E:\Windows Kits\10\Include\10.0.18362.0\ucrt\string.h(133): message :  参见“strcpy”的声明
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(323,1): warning C4996:  'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+E:\Windows Kits\10\Include\10.0.18362.0\ucrt\string.h(133): message :  参见“strcpy”的声明
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(330,1): warning C4996:  'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+E:\Windows Kits\10\Include\10.0.18362.0\ucrt\string.h(133): message :  参见“strcpy”的声明
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(371,1): warning C4996:  'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+E:\Windows Kits\10\Include\10.0.18362.0\ucrt\string.h(133): message :  参见“strcpy”的声明
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(390,20): warning C4018:  “<”: 有符号/无符号不匹配
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(399,31): warning C4309:  “初始化”: 截断常量值
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(400,22): warning C4018:  “<”: 有符号/无符号不匹配
+E:\B18080516\tiny-C-Compiler\Linker\Link.cpp(388,1): warning C4996:  'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+E:\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(208): message :  参见“fopen”的声明
   Linker.vcxproj -> E:\B18080516\tiny-C-Compiler\Linker\Debug\Linker.exe
