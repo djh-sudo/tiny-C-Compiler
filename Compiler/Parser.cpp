@@ -705,23 +705,14 @@ void Parser::IfState(int& var_number, int& level, int loop_id, int addr) {
 
 
 	NextToken();
-	if (!Match(rev_else)) {
-		if (token == lbrac || token == semicon || token == rev_while ||
-			token == rev_if || token == rev_return || token == rev_break ||
-			token == rev_continue || token == rev_in || token == rev_out ||
-			token == rev_void || token == rev_int || token == rev_char ||
-			token == rev_string || token == rev_for) {
-			SyntaxError(else_lost);
-		}
-		else {
-			SyntaxError(else_wrong);
-		}
+	if (Match(rev_else)) {
+		// gen code
+		Block(0, level, loop_id, addr);
+		Generator::GenerateBlock(block_addr, fun);
 	}
-
-	// gen code
-
-	Block(0, level, loop_id, addr);
-	Generator::GenerateBlock(block_addr, fun);
+	else {
+		this->wait = true;
+	}
 	Generator::label(IF_END(to_string(temp_id)));
 	return;
 }
