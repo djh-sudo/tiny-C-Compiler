@@ -486,6 +486,12 @@ VarRecord* Generator::GenerateExp(VarRecord* f1, symbol op, VarRecord* f2, int& 
 					idiv(ebx);
 					break;
 				}
+				case modi: {
+					mov(edx, 0);
+					idiv(ebx);
+					mov(eax, edx);
+					break;
+				}
 				default: {
 					// assert
 				}

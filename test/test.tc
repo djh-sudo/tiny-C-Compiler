@@ -1,0 +1,5 @@
+int main(){
+	int s = 12;
+	out << s % 7;
+	return 0;
+}

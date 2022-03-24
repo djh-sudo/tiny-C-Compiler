@@ -1,0 +1,91 @@
+section .text
+main:
+	push ebp
+	mov ebp,esp
+	mov ebx,[@s_esp]
+	mov [@s_esp],esp
+	mov esp,ebx
+	mov ebx,[@s_ebp]
+	push ebx
+	mov [@s_ebp],esp
+	mov ebx,[@s_esp]
+	mov [@s_esp],esp
+	mov esp,ebx
+	push 0
+	push 12
+	lea eax,[ebp-4]
+	mov ebx,[ebp-8]
+	mov [eax],ebx
+	push 7
+	push 0
+	mov eax,[ebp-4]
+	mov ebx,[ebp-12]
+	mov edx,0
+	idiv ebx
+	mov eax,edx
+	mov [ebp-16],eax
+	push -1
+	mov eax,[@s_esp]
+	mov [@s_esp],esp
+	mov esp,eax
+	mov eax,[ebp-16]
+	sub esp,1
+	mov ecx,0
+	mov [esp],cl
+	mov esi,esp
+	mov [ebp-20],esp
+	mov edi,0
+	cmp eax,0
+	jge @lab_numsign2_exit_8
+@lab_numsign2_7:
+	neg eax
+	mov edi,1
+@lab_numsign2_exit_8:
+	mov ebx,10
+@lab_num2str2_5:
+	mov edx,0
+	idiv ebx
+	mov cl,[esi]
+	inc cl
+	mov [esi],cl
+	sub esp,1
+	add dl,48
+	mov [esp],dl
+	cmp eax,0
+	jne @lab_num2str2_5
+	cmp edi,0
+	je @lab_num2str2_exit_6
+	sub esp,1
+	mov ecx,45
+	mov [esp],cl
+	mov cl,[esi]
+	inc cl
+	mov [esi],cl
+@lab_num2str2_exit_6:
+	mov eax,[@s_esp]
+	mov [@s_esp],esp
+	mov esp,eax
+	mov ecx,[ebp-20]
+	mov edx,0
+	mov dl,[ecx]
+	sub ecx,edx
+	mov ebx,1
+	mov eax,4
+	int 128
+	push 0
+	mov eax,[ebp-24]
+	mov ebx,[@s_ebp]
+	mov [@s_esp],ebx
+	mov ebx,[@s_esp]
+	mov [@s_esp],esp
+	mov esp,ebx
+	pop ebx
+	mov [@s_ebp],ebx
+	mov ebx,[@s_esp]
+	mov [@s_esp],esp
+	mov esp,ebx
+	mov esp,ebp
+	pop ebp
+	ret
+section .data
+section .bss

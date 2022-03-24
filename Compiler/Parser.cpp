@@ -1100,7 +1100,7 @@ VarRecord* Parser::Factor(int& var_number) {
 				token == gt || token == ge || token == lt ||
 				token == le || token == equ || token == nequ ||
 				token == add || token == sub || token == mult ||
-				token == divi) {
+				token == divi || token == modi) {
 				SyntaxError(expr_lost);
 				this->wait = true;
 			}
@@ -1115,7 +1115,7 @@ VarRecord* Parser::Factor(int& var_number) {
 
 VarRecord* Parser::FactorTail(VarRecord* factor, int& var_number) {
 	NextToken();
-	if (token == mult || token == divi) {
+	if (token == mult || token == divi || token == modi) {
 		symbol op = token;
 		VarRecord* factor2 = Item(var_number);
 		// gen code

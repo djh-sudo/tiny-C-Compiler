@@ -165,6 +165,12 @@ bool Lexer::GetSymbol() {
 				else if (show_flag) sp(4, "/");
 				break;
 			}
+			case '%': {
+				sym = modi;
+				GETCHAR
+				if (show_flag) sp(4, "%");
+				break;
+			}
 			case '>': {
 				sym = gt;
 				GETCHAR

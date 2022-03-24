@@ -54,7 +54,7 @@ enum symbol {
 	// 空，标识符，异常，数字
 	null,ident,excep,number,
 	// 加，减，乘，除，赋值
-	add,sub,mult,divi,assign,
+	add,sub,mult,divi,modi,assign,
 	// >，>=，<，<=，==，!=
 	gt,ge,lt,le,equ,nequ,
 	// 输入>>，输出<<
