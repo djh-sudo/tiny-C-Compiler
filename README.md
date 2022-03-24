@@ -5,7 +5,7 @@
 
 `JCC`是一个`C`语言的编译系统，包括编译器(`compiler`)、汇编器(`assembler`)和链接器(`linker`)。最后可以产生`x86-elf`格式的可执行文件。`JCC`的含义是`Just Compiler Compiler`。
 
-![demo](document/src/demo.png)
+<img src="document/src/demo.png" alt="demo" style="zoom:67%;" />
 
 # How to compile
 
@@ -47,4 +47,61 @@ running env: linux(Ubuntu-i386)
 
 参见`document`。
 
+# Demo
+
+在文本编辑器中输入以下`C`语言的代码，这是一段求斐波那契数列的例子。
+
+```c
+int Fibonacci(int k){
+	if(k == 1){
+		return 1;
+	}else{
+		if(k == 0){
+			return 0;
+		}else{
+			return Fibonacci(k - 1) + Fibonacci(k - 2);
+		}
+	}
+}
+
+int main(){
+	for(int i=1;i<20;i=i+1){
+		out << "fib(" + i + "):" + Fibonacci(i) + "\n";
+	}
+	return 0;
+}
+```
+
+在命令行中，输入以下命令:
+
+```bash
+jcc.exe jcc ./demo/test.tc -o ./demo/fib.out
+```
+
+<img src="document/src/demo1.png" alt="demo1" style="zoom:67%;" />
+
+执行完成之后，屏幕显示成功输出文件`fib.out`。
+
+把二进制文件`fib.out`放到虚拟机中，执行。
+
+```bash
+chmod 777 ./test_dir2/fib.out
+./fib.out
+```
+
+最后运行结果:
+
+<img src="document/src/demo2.png" alt="demo2" style="zoom:67%;" />
+
 # END
+
+`updating`中，一些简单的`C`语言的语法特性暂时不支持，例如:
+
+```bash
+i++; # 暂时不支持自增和自减
+|| && # 暂时不支持逻辑运算
+# else{}不可以缺省
+i += 1 # 暂不支持所有的这类表达式
+```
+
+当然更加复杂的C语言结构也暂时不支持，例如结构体`struct`、指针以及一些`enum`关键字，上述不支持的语法，部分在后续可以得到完善。具体支持的语法特性见`document`。

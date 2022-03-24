@@ -1,0 +1,18 @@
+int Fibonacci(int k){
+	if(k == 1){
+		return 1;
+	}else{
+		if(k == 0){
+			return 0;
+		}else{
+			return Fibonacci(k - 1) + Fibonacci(k - 2);
+		}
+	}
+}
+
+int main(){
+	for(int i=1;i<20;i=i+1){
+		out << "fib(" + i + "):" + Fibonacci(i) + "\n";
+	}
+	return 0;
+}
