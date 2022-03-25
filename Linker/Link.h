@@ -62,6 +62,7 @@ public:
 	vector<SymLink*>sym_def;
 public:
 	Link();
+	~Link();
 	void AddElf(const char* file_name);
 	void CollectInfo();
 	bool CheckSymIsValid();

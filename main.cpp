@@ -175,7 +175,7 @@ int main(int argc, char* argv[]) {
 			xPANIC("%s", "missing parameter! -?\n");
 			return 0;
 		}
-		else if (file_names.size() == 0) {
+		else if (file_names.size() == 0 && option != 'h' && option != 'v') {
 			xWARN("%s", "no input file!\n");
 		}
 		else if (i < argc) {

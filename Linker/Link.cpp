@@ -185,6 +185,7 @@ bool Link::CheckSymIsValid() {
 				continue;
 			if (sym_def[i]->name == sym_def[k]->name) {
 				// error
+				cout << "Link error:" << endl;
 				cout << "symname [" << sym_def[i]->name << "] in file <" << sym_def[i]->prov->file_name
 					 << "> conflict with file <" << sym_def[k]->prov->file_name << ">" << endl;
 				res_flag = false;
@@ -194,6 +195,7 @@ bool Link::CheckSymIsValid() {
 	}
 	if (start == nullptr) {
 		// error
+		cout << "Link error:" << endl;
 		cout << "Can't find excutive entry!" << endl;
 		res_flag = false;
 	}
@@ -209,6 +211,7 @@ bool Link::CheckSymIsValid() {
 		}
 		if (all_sym[i]->prov == nullptr) {
 			// error
+			cout << "Link error:" << endl;
 			int info = all_sym[i]->recv->sym_tab[all_sym[i]->name]->st_info;
 			string type = "";
 			if (ELF32_ST_TYPE(info) == STT_OBJECT) type = "variable";
@@ -436,4 +439,31 @@ bool Link::Excute(const char*file_name) {
 	cout << "Linking successfully!" << endl;
 	cout << "output file >>> " << file_name << endl;
 	return true;
+}
+
+Link::~Link() {
+	unordered_map<string, SegList*>::iterator it;
+	it = seg_list.begin();
+	for (it; it != seg_list.end(); it++) {
+		delete it->second;
+	}
+	seg_list.clear();
+	
+	for (int i = 0; i < sym_def.size(); i++) {
+		delete sym_def[i];
+	}
+	sym_def.clear();
+	sym_def.shrink_to_fit();
+
+	for (int i = 0; i < all_sym.size(); i++) {
+		delete all_sym[i];
+	}
+	all_sym.clear();
+	all_sym.shrink_to_fit();
+
+	for (int i = 0; i < files.size(); i++) {
+		delete files[i];
+	}
+	files.clear();
+	files.shrink_to_fit();
 }
