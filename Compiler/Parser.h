@@ -43,10 +43,10 @@ public:
 	void LocalDec(int& var_number, int& level);
 	void LocalDecTail(int& var_number, symbol type, int& level);
 	void Statement(int& var_number, int& level, int loop_id, int addr);
-	void WhileState(int& var_number, int& level);
-	void IfState(int& var_number, int& level, int loop_id, int addr);
+	void WhileState(int& level);
+	void IfState(int& level, int loop_id, int addr);
 	
-	void ForState(int& var_number, int& level);
+	void ForState(int& level);
 	void ForInit(int& var_number, int& level);
 	void ForCondition(int& var_number, int& level, int addr_end);
 	void ForEnd(int& var_number, int& level, int loop_id, int addr, int addr_end);

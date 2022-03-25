@@ -213,6 +213,8 @@ main:
 	jmp @if_1_end
 @if_1_middle:
 	lea esp,[ebp-24]
+@if_1_end:
+	lea esp,[ebp-24]
 	push 2
 	push -1
 	mov eax,[@s_esp]
@@ -246,9 +248,6 @@ main:
 	mov ebx,1
 	mov eax,4
 	int 128
-	lea esp,[ebp-24]
-@if_1_end:
-	lea esp,[ebp-24]
 	jmp @for_1_iter
 @for_1_exit:
 	mov esp,ebp

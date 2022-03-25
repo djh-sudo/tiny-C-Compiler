@@ -490,18 +490,18 @@ void Parser::Statement(int& var_number, int& level, int loop_id, int addr) {
 		}
 		case rev_while: {
 			this->for_level.push_back(0);
-			WhileState(var_number, level);
+			WhileState(level);
 			for_level.pop_back();
 			break;
 		}
 		case rev_for: {
 			this->for_level.push_back(1);
-			ForState(var_number, level);
+			ForState(level);
 			this->for_level.pop_back();
 			break;
 		}
 		case rev_if: {
-			IfState(var_number, level, loop_id, addr);
+			IfState(level, loop_id, addr);
 			break;
 		}
 		case rev_break: {
@@ -616,7 +616,7 @@ void Parser::Statement(int& var_number, int& level, int loop_id, int addr) {
 	}
 }
 
-void Parser::WhileState(int& var_number, int& level) {
+void Parser::WhileState(int& level) {
 	while_id++;
 	int temp_id = while_id;
 	NextToken();
@@ -661,7 +661,7 @@ void Parser::WhileState(int& var_number, int& level) {
 	return;
 }
 
-void Parser::IfState(int& var_number, int& level, int loop_id, int addr) {
+void Parser::IfState(int& level, int loop_id, int addr) {
 	if_id++;
 	int temp_id = if_id;
 	NextToken();
@@ -717,7 +717,7 @@ void Parser::IfState(int& var_number, int& level, int loop_id, int addr) {
 	return;
 }
 
-void Parser::ForState(int& var_number, int& level) {
+void Parser::ForState(int& level) {
 	for_id++;
 	NextToken();
 	if (!Match(lparen)) {

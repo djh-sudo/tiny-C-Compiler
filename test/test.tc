@@ -5,9 +5,8 @@ int main(){
 		}
 		if(i>5){
 			continue;
-		}else{
-			out <<"-\n";
 		}
+		out <<"-\n";
 		
 	}
 	return 0;
