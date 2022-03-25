@@ -1,13 +1,12 @@
 int main(){
-	for(int i = 0;i<10;i=i+1){
-		int g = i*i*i;
-		if(i<=8){
-			out << g + "\n";
-		}else{
-			out << g * i + "\n";
+	for(int i=0;i<10;i=i+1){
+		for(int j=0;j<10;j=j+1){
+			out << i*j + " ";
+		}
+		out <<"\n";
+		if(i>5){
 			break;
 		}
 	}
-	out << i + "\n";
 	return 0;
 }

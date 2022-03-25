@@ -125,7 +125,9 @@ Fibonacci:
 	mov esp,ebp
 @if_2_end:
 	mov esp,ebp
+	mov esp,ebp
 @if_1_end:
+	mov esp,ebp
 	mov ebx,[@s_ebp]
 	mov [@s_esp],ebx
 	mov ebx,[@s_esp]
@@ -151,6 +153,7 @@ main:
 	mov ebx,[@s_esp]
 	mov [@s_esp],esp
 	mov esp,ebx
+@for_1_start:
 	push 0
 	push 1
 	lea eax,[ebp-4]
@@ -479,8 +482,9 @@ main:
 	int 128
 	jmp @for_1_iter
 @for_1_exit:
+	mov esp,ebp
 	push 0
-	mov eax,[ebp-20]
+	mov eax,[ebp-4]
 	mov ebx,[@s_ebp]
 	mov [@s_esp],ebx
 	mov ebx,[@s_esp]

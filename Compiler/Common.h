@@ -45,6 +45,7 @@ using namespace std;
 #define WHILE_EXIT(X) string("@while_") + X + "_exit"
 #define IF_MIDDLE(X) string("@if_") + X + "_middle"
 #define IF_END(X) string("@if_") + X + "_end"
+#define FOR_START(X) string("@for_") + X + "_start"
 #define FOR_LOOP(X) string("@for_") + X + "_loop"
 #define FOR_EXIT(X) string("@for_") + X + "_exit"
 #define FOR_ITER(X) string("@for_") + X + "_iter"

@@ -1,4 +1,5 @@
 #include <string.h>
+#include <cassert>
 #include "Semantic.h"
 #include "Generator.h"
 
@@ -149,6 +150,7 @@ int FunRecord::GetCurrentAddr() {
 	}
 	else {
 		// assert
+
 	}
 }
 
@@ -175,27 +177,29 @@ void FunRecord::FlushArgs() {
 }
 
 void FunRecord::PopLocalVars(int var_number) {
-	if (local_vars && arguments) {
+	if (var_number == -1) {
+		// 函数定义结束
+		int args_len = arguments->size();
+		int var_len = local_vars->size();
+		for (int i = 0; i < args_len; i++) {
+			// table del
+			string name = (*local_vars)[i]->get_name();
+			VarTable::DelVar(name);
+		}
+		local_vars->clear();
+		return;
+	}
+	if (local_vars && arguments && var_number <= local_vars->size()) {
 		for (int i = 0; i < var_number; i++) {
 			string name = (*local_vars)[local_vars->size() - 1]->get_name();
 			// table del
 			VarTable::DelVar(name);
 			this->local_vars->pop_back();
 		}
-		if (var_number == -1) {
-			// 函数定义结束
-			int args_len = arguments->size();
-			int var_len = local_vars->size();
-			for (int i = 0; i < args_len; i++) {
-				// table del
-				string name = (*local_vars)[i]->get_name();
-				VarTable::DelVar(name);
-			}
-			local_vars->clear();
-		}
 	}
 	else {
 		// assert
+		assert(false);
 	}
 	return;
 }

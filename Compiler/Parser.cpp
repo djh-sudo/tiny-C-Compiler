@@ -489,21 +489,19 @@ void Parser::Statement(int& var_number, int& level, int loop_id, int addr) {
 			break;
 		}
 		case rev_while: {
+			this->for_level.push_back(0);
 			WhileState(var_number, level);
+			for_level.pop_back();
 			break;
 		}
 		case rev_for: {
-			this->for_level.push_back(level);
+			this->for_level.push_back(1);
 			ForState(var_number, level);
 			this->for_level.pop_back();
 			break;
 		}
 		case rev_if: {
-			if(!for_level.empty())
-				for_level.back()++;
 			IfState(var_number, level, loop_id, addr);
-			if (!for_level.empty())
-				for_level.back()--;
 			break;
 		}
 		case rev_break: {
@@ -522,7 +520,7 @@ void Parser::Statement(int& var_number, int& level, int loop_id, int addr) {
 			// gen code
 			if (loop_id != 0) {
 				Generator::GenerateBlock(addr, fun);
-				if (level != for_level.back() + 1) {
+				if (for_level.back() == 0) {
 					Generator::jmp(WHILE_EXIT(to_string(loop_id)));
 				}
 				else {
@@ -550,7 +548,7 @@ void Parser::Statement(int& var_number, int& level, int loop_id, int addr) {
 			// gen code
 			if (loop_id != 0) {
 				Generator::GenerateBlock(addr, fun);
-				if (level != for_level.back() + 1) {
+				if (for_level.back() == 0) {
 					Generator::jmp(WHILE_LOOP(to_string(loop_id)));
 				}
 				else {
@@ -659,6 +657,7 @@ void Parser::WhileState(int& var_number, int& level) {
 	Generator::GenerateBlock(block_addr, fun);
 	Generator::jmp(WHILE_LOOP(to_string(temp_id)));
 	Generator::label(WHILE_EXIT(to_string(temp_id)));
+	Generator::GenerateBlock(block_addr, fun);//
 	return;
 }
 
@@ -697,7 +696,7 @@ void Parser::IfState(int& var_number, int& level, int loop_id, int addr) {
 		}
 	}
 	// gen code
-	Block(init, level, loop_id, addr);
+	Block(init, level, loop_id, block_addr);
 	Generator::GenerateBlock(block_addr, fun);
 	Generator::jmp(IF_END(to_string(temp_id)));
 	Generator::label(IF_MIDDLE(to_string(temp_id)));
@@ -714,12 +713,12 @@ void Parser::IfState(int& var_number, int& level, int loop_id, int addr) {
 		this->wait = true;
 	}
 	Generator::label(IF_END(to_string(temp_id)));
+	Generator::GenerateBlock(block_addr, fun);//
 	return;
 }
 
 void Parser::ForState(int& var_number, int& level) {
 	for_id++;
-	int temp_id = for_id;
 	NextToken();
 	if (!Match(lparen)) {
 		if (token == ident || token == number || token == lbrac ||
@@ -732,37 +731,41 @@ void Parser::ForState(int& var_number, int& level) {
 		}
 	}
 	//
-	ForInit(var_number, level);
+	int init_number = 0;
+	ForInit(init_number, level);
 	return;
 }
 
-void Parser::ForInit(int& var_number, int& level) {
+void Parser::ForInit(int& init_number, int& level) {
 	NextToken();
+	
+	Generator::label(FOR_START(to_string(for_id)));
+	int block_addr = Generator::GenerateBlock(-1, fun);
 	if (token == rev_int || token == rev_char || token == rev_string) {
-		LocalDec(var_number, level);
+		LocalDec(init_number, level);
 	}
 	else if (token == ident) {
 		this->wait = true;
-		OneExpr(var_number);
+		OneExpr(init_number);
 		NextToken();
 	}
 	if (!Match(semicon)) {
 		SyntaxError(semicon_lost);
 		this->wait = true;
 	}
-	ForCondition(var_number, level);
+	ForCondition(init_number, level,block_addr);
 }
 
-void Parser::ForCondition(int& var_number, int& level) {
+void Parser::ForCondition(int& init_number, int& level,int addr_end) {
 	NextToken();
 	int temp_id = for_id;
 	// code gen
 	Generator::label(FOR_LOOP(to_string(temp_id)));
 	int block_addr = Generator::GenerateBlock(-1, fun);
-	int init = 0;
+	// int init = var_number;////////////
 	if (token != semicon) {
 		this->wait = true;
-		VarRecord* condition = Expr(init);
+		VarRecord* condition = Expr(init_number);
 		Generator::GenerateCondition(condition);
 		Generator::je(FOR_EXIT(to_string(temp_id)));
 		NextToken();
@@ -771,15 +774,15 @@ void Parser::ForCondition(int& var_number, int& level) {
 		SyntaxError(semicon_lost);
 		this->wait = true;
 	}
-	ForEnd(var_number, level, temp_id, block_addr,init);
+	ForEnd(init_number, level, temp_id, block_addr,addr_end);
 }
 
-void Parser::ForEnd(int& var_number, int& level, int loop_id, int addr,int init) {
+void Parser::ForEnd(int& init_number, int& level, int loop_id, int addr, int addr_end) {
 	NextToken();
 	if (token != rparen) {
 		this->wait = true;
 		Generator::for_flag = loop_id;
-		OneExpr(var_number);
+		OneExpr(init_number);
 		NextToken();
 		// Statement(var_number, level, loop_id, addr);
 	}
@@ -795,11 +798,12 @@ void Parser::ForEnd(int& var_number, int& level, int loop_id, int addr,int init)
 	}
 	
 	Generator::label(FOR_BLOCK(to_string(loop_id)));
-	Block(init, level, for_id, addr);
-	// Generator::GenerateBlock(addr, fun);
+	Block(init_number, level, for_id, addr);
+	// 
 
 	Generator::jmp(FOR_ITER(to_string(loop_id)));
 	Generator::label(FOR_EXIT(to_string(loop_id)));
+	Generator::GenerateBlock(addr_end, fun);//
 	return;
 }
 

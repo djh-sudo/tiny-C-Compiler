@@ -48,8 +48,8 @@ public:
 	
 	void ForState(int& var_number, int& level);
 	void ForInit(int& var_number, int& level);
-	void ForCondition(int& var_number, int& level);
-	void ForEnd(int& var_number, int& level, int loop_id, int addr, int init);
+	void ForCondition(int& var_number, int& level, int addr_end);
+	void ForEnd(int& var_number, int& level, int loop_id, int addr, int addr_end);
 
 	void ReturnState(int& var_number, int& level);
 	void ReturnTail(int& var_number, int& level);
