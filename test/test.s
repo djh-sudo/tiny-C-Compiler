@@ -192,6 +192,27 @@ main:
 	jmp @for_2_iter
 @for_2_exit:
 	lea esp,[ebp-24]
+	push 5
+	push 0
+	mov eax,[ebp-4]
+	mov ebx,[ebp-28]
+	cmp eax,ebx
+	jg @lab_base_cmp_32
+	mov eax,0
+	jmp @lab_base_cmp_exit_33
+@lab_base_cmp_32:
+	mov eax,1
+@lab_base_cmp_exit_33:
+	mov [ebp-32],eax
+	mov eax,[ebp-32]
+	cmp eax,0
+	je @if_1_middle
+	lea esp,[ebp-24]
+	jmp @for_1_iter
+	lea esp,[ebp-24]
+	jmp @if_1_end
+@if_1_middle:
+	lea esp,[ebp-24]
 	push 2
 	push -1
 	mov eax,[@s_esp]
@@ -202,19 +223,19 @@ main:
 	mov [esp],al
 	mov [ebp-32],esp
 	cmp eax,0
-	je @lab_cpystr2_exit_33
+	je @lab_cpystr2_exit_37
 	mov ecx,@str_2_len
 	dec ecx
 	mov esi,@str_2
-@lab_cpystr2_32:
+@lab_cpystr2_36:
 	cmp ecx,-1
-	je @lab_cpystr2_exit_33
+	je @lab_cpystr2_exit_37
 	mov dl,[esi+ecx]
 	sub esp,1
 	mov [esp],dl
 	dec ecx
-	jmp @lab_cpystr2_32
-@lab_cpystr2_exit_33:
+	jmp @lab_cpystr2_36
+@lab_cpystr2_exit_37:
 	mov eax,[@s_esp]
 	mov [@s_esp],esp
 	mov esp,eax
@@ -225,29 +246,9 @@ main:
 	mov ebx,1
 	mov eax,4
 	int 128
-	push 5
-	push 0
-	mov eax,[ebp-4]
-	mov ebx,[ebp-36]
-	cmp eax,ebx
-	jg @lab_base_cmp_38
-	mov eax,0
-	jmp @lab_base_cmp_exit_39
-@lab_base_cmp_38:
-	mov eax,1
-@lab_base_cmp_exit_39:
-	mov [ebp-40],eax
-	mov eax,[ebp-40]
-	cmp eax,0
-	je @if_1_middle
-	lea esp,[ebp-32]
-	jmp @for_1_exit
-	lea esp,[ebp-32]
-	jmp @if_1_end
-@if_1_middle:
-	lea esp,[ebp-32]
+	lea esp,[ebp-24]
 @if_1_end:
-	lea esp,[ebp-32]
+	lea esp,[ebp-24]
 	jmp @for_1_iter
 @for_1_exit:
 	mov esp,ebp
@@ -269,6 +270,6 @@ main:
 section .data
 	@str_1 db " "
 	@str_1_len equ 1
-	@str_2 db 10
-	@str_2_len equ 1
+	@str_2 db "-",10
+	@str_2_len equ 2
 section .bss

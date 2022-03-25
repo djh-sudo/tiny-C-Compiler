@@ -3,10 +3,12 @@ int main(){
 		for(int j=0;j<10;j=j+1){
 			out << i*j + " ";
 		}
-		out <<"\n";
 		if(i>5){
-			break;
+			continue;
+		}else{
+			out <<"-\n";
 		}
+		
 	}
 	return 0;
 }

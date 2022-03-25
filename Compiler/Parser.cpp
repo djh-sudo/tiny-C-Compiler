@@ -552,7 +552,7 @@ void Parser::Statement(int& var_number, int& level, int loop_id, int addr) {
 					Generator::jmp(WHILE_LOOP(to_string(loop_id)));
 				}
 				else {
-					Generator::jmp(FOR_EXIT(to_string(loop_id)));
+					Generator::jmp(FOR_ITER(to_string(loop_id)));
 				}
 			}
 			else {
@@ -762,7 +762,7 @@ void Parser::ForCondition(int& init_number, int& level,int addr_end) {
 	// code gen
 	Generator::label(FOR_LOOP(to_string(temp_id)));
 	int block_addr = Generator::GenerateBlock(-1, fun);
-	// int init = var_number;////////////
+
 	if (token != semicon) {
 		this->wait = true;
 		VarRecord* condition = Expr(init_number);
