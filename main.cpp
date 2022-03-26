@@ -69,8 +69,8 @@ void Usage() {
 	xINFO("%s", "   [-v] show verision and developer info\n");
 	xINFO("%s", "   [-c] compile the c code to s code\n");
 	xINFO("%s", "   [-s] assmble the s code to obj code(elf-x86)\n");
-	xINFO("%s", "   [-l][ out_name] link the obj file to one elf file\n");
-	xINFO("%s", "   [-o][ out_name] compile the c code to elf file\n");
+	xINFO("%s", "   [-l][out_name] link the obj file to one elf file\n");
+	xINFO("%s", "   [-o][out_name] compile the c code to elf file\n");
 }
 
 
@@ -78,7 +78,7 @@ void Printc(char c = '#') {
 	xINFO("%s", "\nWelcome to JCC tools!\n");
 	xINFO("%s", "jcc means Just Compiler Compiler, which similar to gcc homophonic.\n");
 	xINFO("%s", "if you have any question,pls contact with djh113@126.com\n");
-	xINFO("%s", "version 1.0 ...\n\n\n");
+	xWARN("%s", "version 1.0 ...\n\n\n");
 	char position[][33] = { { 0,1,2,3,4,5,12,13,14,15,16,17,27,28,29,30,31},
 							{4,5,12,13,14,17,18,26,27,28,31,32},
 							{4,5,11,12,25,26,},
