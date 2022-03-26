@@ -431,12 +431,12 @@ void Parser::Over() {
 	Table::Over();
 	Elf_File::Over();
 
-	cout << "error number:" << Generate::error_number << endl;
+	xINFO("%s%d\n","error number:", Generate::error_number);
 	if (Generate::error_number == 0) {
-		cout << "assemble ["<< file_name<<"] successfully!" << endl;
+		xSUCC("%s%s%s", "assemble [", file_name.c_str(), "] successfully!\n");
 	}
 	else {
-		cout << "assmble [" << file_name << "] failed!" << endl;
+		xPANIC("%s%s%s", "assmble [", file_name.c_str(), "] failed!\n");
 	}
 }
 

@@ -6,7 +6,7 @@
 using namespace std;
 
 void Usage() {
-	cout << "Usage: ass file1 file2 ..." << endl;
+	xWARN("%s", "Usage: ass file1 file2 ...\n");
 }
 int main(int argc, char* argv[]) {
 	if (argc < 2) {
@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
 		}
 	}
 	else {
-		cout << "not recognize " << argv[1] << ", using ass" << endl;
+		xPANIC("%s%s%s", "not recognize ", argv[1], ", using ass\n");
 		Usage();
 
 	}

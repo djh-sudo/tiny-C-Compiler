@@ -16,11 +16,11 @@ bool Generate::Init(string file_name) {
 	fout = nullptr;
 	fout = fopen((file_name).c_str(), "wb");
 	if (fout != nullptr) {
-		cout << "file[ " << file_name << "] open[wb] successfully!" << endl;
+		xSUCC("%s%s%s", "file[ ", file_name.c_str(), "] open[wb] successfully!\n");
 		return true;
 	}
 	else {
-		cout << "file [" << file_name << "] open failed!" << endl;
+		xPANIC("%s%s%s", "file [", file_name.c_str(), "] open failed!\n");
 		return false;
 	}
 	
@@ -52,19 +52,19 @@ void Generate::WriteBytes(int value, int len, bool scan){
 	VarRecord::current_addr += len;
 	if (!scan) {
 		fwrite(&value, len, 1, fout);
-		fflush(fout);
+		// fflush(fout);
 	}
 	return;
 }
 
 void Generate::WriteBytes(int value, int len) {
 	fwrite(&value, len, 1, fout);
-	fflush(fout);
+	// fflush(fout);
 }
 
 void Generate::WriteBytes(const void* buffer, size_t len) {
 	fwrite(buffer, len, 1, fout);
-	fflush(fout);
+	// fflush(fout);
 }
 
 bool Generate::HandleRelocation(int type, bool scan, VarRecord** rel,string cur_seg) {
@@ -285,49 +285,49 @@ void Generate::Over() {
 
 void Generate::Error(error_c code) {
 	error_number++;
-	cout << "error at line [" << line_number << "] ";
+	xPANIC("%s%d%s", "error at line [", line_number, "] ");
 	switch (code) {
 		case ident_lost:{
-			cout << "ident may lost!" << endl;
+			xWARN("%s", "ident may lost!\n");
 			break;
 		}
 		case times_wrong: {
-			cout << "`times` can only with number!" << endl;
+			xWARN("%s", "`times` can only with number!\n");
 			break;
 		}
 		case equ_wrong: {
-			cout << "`equ` can only with number!" << endl;
+			xWARN("%s", "`equ` can only with number!\n");
 			break;
 		}
 		case len_type_wrong: {
-			cout << "type length only can be 1,2,4 (Byte)!" << endl;
+			xWARN("%s", "type length only can be 1,2,4 (Byte)!\n");
 			break;
 		}
 		case type_wrong: {
-			cout << "type only can be db,dd,dw!" << endl;
+			xWARN("%s", "type only can be db,dd,dw!\n");
 		}
 		case comma_lost: {
-			cout << "comma(,) maybe lost!" << endl;
+			xWARN("%s", "comma(,) maybe lost!\n");
 			break;
 		}
 		case instruction_wrong: {
-			cout << "unrecognizied instruction!" << endl;
+			xWARN("%s", "unrecognizied instruction!\n");
 			break;
 		}
 		case subs_non_number: {
-			cout << "sub(-) can only with number!" << endl;
+			xWARN("%s", "sub(-) can only with number!\n");
 			break;
 		}
 		case regs_wrong: {
-			cout << "reister wrong! not an effective regs!" << endl;
+			xWARN("%s", "reister wrong! not an effective regs!\n");
 			break;
 		}
 		case rbrac_lost: {
-			cout << "rbrac(]) maybe lost!" << endl;
+			xWARN("%s", "rbrac(]) maybe lost!\n");
 			break;
 		}
 		case lbrac_lost: {
-			cout << "lbrac([) maybe lost!" << endl;
+			xWARN("%s", "lbrac([) maybe lost!\n");
 			break;
 		}
 	}

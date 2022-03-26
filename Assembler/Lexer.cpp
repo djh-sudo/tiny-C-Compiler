@@ -27,11 +27,11 @@ Lexer::~Lexer() {
 bool Lexer::Init(const char* file_path) {
 	fin = fopen(file_path, "r");
 	if (fin) {
-		cout << "file [" << file_path << "] open[r] successfully!" << endl;
+		xSUCC("%s%s%s", "file [", file_path, "] open[r] successfully!\n");
 		return true;
 	}
 	else {
-		cout << "file [" << file_path << "] open failed! not exist?" << endl;
+		xPANIC("%s%s%s", "file [", file_path, "] open failed! not exist?\n");
 		return false;
 	}
 }
@@ -51,7 +51,7 @@ bool Lexer::GetChar() {
 			line[line_len] = current_char;
 			line_len++;
 			if (line_len == MAX_LEN) {
-				// error
+				LexerError(line2long);
 				break;
 			}
 		}
@@ -88,8 +88,7 @@ bool Lexer::GetSym() {
 			current_char == '.' || current_char >= '0' && current_char <= '9');
 		id[id_length] = 0;
 		if (real_length > ID_LEN) {
-			// error
-
+			LexerError(id2long);
 		}
 		CheckReserved();
 		if (show_flag) sp(0);
@@ -110,7 +109,7 @@ bool Lexer::GetSym() {
 			res_flag = GetChar();
 		} while (current_char >= '0' && current_char <= '9');
 		if (real_length > NUM_LENGTH) {
-			// error
+			LexerError(num2long);
 		}
 		if (show_flag) sp(1);
 		return res_flag;
@@ -165,13 +164,13 @@ bool Lexer::GetSym() {
 					}
 					res_flag = GetChar();
 					if (!res_flag) {
-						// error
+						LexerError(string_wrong);
 						return false;
 					}
 				}
 				str[str_length] = 0;
 				if (real_length > STRING_LEN) {
-					// error
+					LexerError(str2long);
 				}
 				sym = strings;
 				GET_CHAR
@@ -195,7 +194,7 @@ bool Lexer::GetSym() {
 				return false;
 			}
 			default: {
-				// error
+				LexerError(excep_sym);
 				sym = excep;
 				GET_CHAR
 				break;
@@ -295,5 +294,37 @@ void Lexer::sp(int mode, string s) {
 			cout << s << endl;
 			break;
 		}
+	}
+}
+
+void Lexer::LexerError(error_c code) {
+	xPANIC("%s%d%s", "lexer error at line [", line_number, "]:");
+	switch (code){
+		case line2long: {
+			xWARN("%s", "charactor at one line is too much!(over 80)\n");
+			break;
+		}
+		case id2long: {
+			xWARN("%s", "ident name is too long!\n");
+			break;
+		}
+		case num2long: {
+			xWARN("%s", "number is too big!\n");
+			break;
+		}
+		case str2long: {
+			xWARN("%s", "string length is too long!\n");
+			break;
+		}
+		case excep_sym: {
+			xWARN("%s", "not an effective symbol!\n");
+			break;
+		}
+		case string_wrong: {
+			xWARN("%s", "string missing \"?\n");
+			break;
+		}
+	default:
+		break;
 	}
 }

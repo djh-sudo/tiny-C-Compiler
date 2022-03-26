@@ -185,9 +185,11 @@ bool Link::CheckSymIsValid() {
 				continue;
 			if (sym_def[i]->name == sym_def[k]->name) {
 				// error
-				cout << "Link error:" << endl;
-				cout << "symname [" << sym_def[i]->name << "] in file <" << sym_def[i]->prov->file_name
-					 << "> conflict with file <" << sym_def[k]->prov->file_name << ">" << endl;
+				xPANIC("%s", "Link error:\n");
+				xWARN("%s%s%s%s%s%s%s", "symname [", (sym_def[i]->name).c_str(),
+					"] in file <", (sym_def[i]->prov->file_name).c_str()
+					, "> conflict with file <",
+					sym_def[k]->prov->file_name, ">\n");
 				res_flag = false;
 			}
 		}
@@ -195,8 +197,8 @@ bool Link::CheckSymIsValid() {
 	}
 	if (start == nullptr) {
 		// error
-		cout << "Link error:" << endl;
-		cout << "Can't find excutive entry!" << endl;
+		xPANIC("%s\n", "Link error:");
+		xWARN("%s\n", "Can't find excutive entry!");
 		res_flag = false;
 	}
 	for (int i = 0; i < all_sym.size(); i++) {
@@ -211,14 +213,15 @@ bool Link::CheckSymIsValid() {
 		}
 		if (all_sym[i]->prov == nullptr) {
 			// error
-			cout << "Link error:" << endl;
+			xPANIC("%s\n", "Link error:");
 			int info = all_sym[i]->recv->sym_tab[all_sym[i]->name]->st_info;
 			string type = "";
 			if (ELF32_ST_TYPE(info) == STT_OBJECT) type = "variable";
 			else if (ELF32_ST_TYPE(info) == STT_FUNC) type = "func";
 			else type = "symbol";
-			cout << type << " [" << all_sym[i]->name << "] is not defined in file <" 
-				 << all_sym[i]->recv->file_name << ">" << endl;
+			xWARN("%s%s%s%s%s%s", type.c_str(), " [",
+				(all_sym[i]->name).c_str(), "] is not defined in file <"
+				, (all_sym[i]->recv->file_name).c_str(), ">\n");
 
 			res_flag = false;
 		}
@@ -428,7 +431,7 @@ void Link::ExportElf(const char* file_name) {
 bool Link::Excute(const char*file_name) {
 	CollectInfo();
 	if (!CheckSymIsValid()) {
-		cout << "Linking failed!" << endl;
+		xPANIC("%s", "Linking failed!\n");
 		return false;
 	}
 	AllocAddr();
@@ -436,8 +439,8 @@ bool Link::Excute(const char*file_name) {
 	Relocation();
 	AssemblyObj();
 	ExportElf(file_name);
-	cout << "Linking successfully!" << endl;
-	cout << "output file >>> " << file_name << endl;
+	xSUCC("%s", "Linking successfully!\n");
+	xSUCC("%s%s\n", "output file >>> ", file_name);
 	return true;
 }
 

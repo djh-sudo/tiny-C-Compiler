@@ -903,8 +903,6 @@ main:
 	mov eax,4
 	int 128
 	lea esp,[ebp-4]
-	jmp @switch_tab_1_end
-	lea esp,[ebp-4]
 @default_1_lab:
 	push 7
 	push -1

@@ -40,7 +40,7 @@ int main(){
 		}
 		case 999:{
 			out << a+"\n";
-			break;
+			
 		}
 		default:{
 			out<<"this is default!\n";

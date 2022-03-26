@@ -65,7 +65,7 @@ public:
 	void CheckReserved();
 	// error handle
 	void sp(int mode, string s = "");
-	// void LexicalError(enum error_c);
+	void LexerError(error_c code);
 	// set API
 	char get_current_char();
 	char get_old_char();

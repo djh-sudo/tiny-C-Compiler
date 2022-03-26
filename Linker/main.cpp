@@ -1,13 +1,14 @@
 #include <iostream>
-#include "string.h" 
+#include "Common.h"
+#include "string.h"
 #include "Link.h"
 
 
 using namespace std;
 
 void Usage() {
-	cout << "link obj1 obj2 ... [-o out_name]" << endl;
-	cout << "default output name is a.out" << endl;
+	xWARN("%s", "link obj1 obj2 ... [-o out_name]\n");
+	xWARN("%s", "default output name is a.out\n");
 }
 
 int main(int argc, char* argv[]) {
@@ -40,7 +41,7 @@ int main(int argc, char* argv[]) {
 		}
 	}
 	else {
-		cout << "Not recognize command " << argv[1] << " ,using link" << endl;
+		xPANIC("%s%s%s", "Not recognize command ", argv[1], " ,using link\n");
 		Usage();
 	}
 	return 0;
