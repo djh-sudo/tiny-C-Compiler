@@ -15,7 +15,7 @@ bool Generator::Init(const char* file_name) {
 		return false;
 	}
 	else {
-		xSUCC("%s%s%s", "file [", file_name, "] open successfully!\n");
+		xSUCC("%s%s%s", "file [", file_name, "] open successfully ...\n");
 		return true;
 	}
 }
@@ -181,27 +181,15 @@ VarRecord* Generator::GenerateExp(VarRecord* f1, symbol op, VarRecord* f2, int& 
 				string lab_num_sign = GenerateName("lab", null, "numsign2");
 				string lab_num_sign_exit = GenerateName("lab", null, "numsign2_exit");
 				exchg_esp();
-				if (f2->get_local_addr() == 0) {
-					// 全局变量
-					mov(eax, __("@var_" + f2->get_name()));
-				}
-				else {
-					// 局部变量
-					if (f2->get_local_addr() < 0) {
-						mov(eax, __ebp(f2->get_local_addr()));
-					}
-					else {
-						mov(eax, _ebp(f2->get_local_addr()));
-					}
-				}
+				LoadVarAddrToReg(f2, eax);
 				subi(esp, 1);
 				mov(ecx, 0);
 				mov(__(esp), cl);
 				mov(esi, esp);
 				mov(__ebp(tmp->get_local_addr()), esp);
-				mov(edi, 0);// 保存eax符号
+				mov(edi, 0);// store eax sign
 				cmp(eax, 0);
-				jge(lab_num_sign_exit); // 正数
+				jge(lab_num_sign_exit); // positive number
 				label(lab_num_sign);
 				neg(eax);
 				mov(edi, 1);
@@ -231,24 +219,14 @@ VarRecord* Generator::GenerateExp(VarRecord* f1, symbol op, VarRecord* f2, int& 
 			}
 			else if (f2->get_type() == rev_char) {
 				exchg_esp();
-				if (f2->get_local_addr() == 0) {
-					mov(eax, __("@var_" + f2->get_name()));
-				}
-				else {
-					if (f2->get_local_addr() < 0) {
-						mov(eax, __ebp(f2->get_local_addr()));
-					}
-					else {
-						mov(eax, _ebp(f2->get_local_addr()));
-					}
-					subi(esp, 1);
-					mov(bl, 1);
-					mov(__(esp), bl);
-					mov(__ebp(tmp->get_local_addr()), esp);
-					subi(esp, 1);
-					mov(__(esp), al);
-					exchg_esp();
-				}
+				LoadVarAddrToReg(f2, eax);
+				subi(esp, 1);
+				mov(bl, 1);
+				mov(__(esp), bl);
+				mov(__ebp(tmp->get_local_addr()), esp);
+				subi(esp, 1);
+				mov(__(esp), al);
+				exchg_esp();
 			}
 
 			if (f1->get_type() == rev_string) {
@@ -296,7 +274,7 @@ VarRecord* Generator::GenerateExp(VarRecord* f1, symbol op, VarRecord* f2, int& 
 
 				}
 				else if(f1->get_value() > 0) {
-					// 常量 string
+					// const string
 					exchg_esp();
 					mov(eax, ("@str_" + to_string(f1->get_value()) + "_len"));
 					cmp(eax, 0);
@@ -370,105 +348,65 @@ VarRecord* Generator::GenerateExp(VarRecord* f1, symbol op, VarRecord* f2, int& 
 				string lab_num_sign_exit = GenerateName("lab", null, "numsign1_exit");
 				string lab2long = GenerateName("lab", null, "numsign_add");
 				exchg_esp();
-				if (f1->get_local_addr() == 0){
-					mov(eax, __("@var_" + f1->get_name()));
-				}
-				else {
-					if (f1->get_local_addr() < 0) {
-						mov(eax, __ebp(f1->get_local_addr()));
-					}
-					else {
-						mov(eax, _ebp(f1->get_local_addr()));
-					}
-					mov(esi, __ebp(tmp->get_local_addr()));
-					mov(edi, 0); // 0+ 1-
-					cmp(eax, 0);
-					jge(lab_num_sign_exit);
-					label(lab_num_sign);
-					neg(eax);
-					mov(edi, 1);
-					label(lab_num_sign_exit);
-					mov(ebx, 10);
-					label(lab_loop);
-					mov(edx, 0);
-					idiv(ebx);
-					mov(cl, __(esi));
-					inc(cl);
-					mov(__(esi), cl);
-					subi(esp, 1);
-					addi(dl, 48);
-					mov(__(esp), dl);
-					cmp(eax, 0);
-					jne(lab_loop);
-					cmp(edi, 0);
-					je(lab2long);
-					subi(esp, 1);
-					mov(ecx, '-');
-					mov(__(esp), cl);
-					mov(cl, __(esi));
-					inc(cl);
-					mov(__(esi), cl);
-					label(lab2long);
-					cmp(cl, 255);
-					jna(lab_exit);
-					call(STR2LONG);
-					label(lab_exit);
-					exchg_esp();
-				}
+				LoadVarAddrToReg(f1, eax);
+				mov(esi, __ebp(tmp->get_local_addr()));
+				mov(edi, 0); // 0+ 1-
+				cmp(eax, 0);
+				jge(lab_num_sign_exit);
+				label(lab_num_sign);
+				neg(eax);
+				mov(edi, 1);
+				label(lab_num_sign_exit);
+				mov(ebx, 10);
+				label(lab_loop);
+				mov(edx, 0);
+				idiv(ebx);
+				mov(cl, __(esi));
+				inc(cl);
+				mov(__(esi), cl);
+				subi(esp, 1);
+				addi(dl, 48);
+				mov(__(esp), dl);
+				cmp(eax, 0);
+				jne(lab_loop);
+				cmp(edi, 0);
+				je(lab2long);
+				subi(esp, 1);
+				mov(ecx, '-');
+				mov(__(esp), cl);
+				mov(cl, __(esi));
+				inc(cl);
+				mov(__(esi), cl);
+				label(lab2long);
+				cmp(cl, 255);
+				jna(lab_exit);
+				call(STR2LONG);
+				label(lab_exit);
+				exchg_esp();
 
 			}
 			else if (f1->get_type() == rev_char) {
 				lab_loop = GenerateName("lab", null, "char2str_exit");
 				exchg_esp();
-				if (f1->get_local_addr() == 0) {
-					mov(eax, __("@var_" + f1->get_name()));
-				}
-				else {
-					if (f1->get_local_addr() < 0) {
-						mov(eax, __ebp(f1->get_local_addr()));
-					}
-					else {
-						mov(eax, _ebp(f1->get_local_addr()));
-					}
-					mov(esi, __ebp(tmp->get_externed()));
-					mov(cl, __(esi));
-					inc(cl);
-					mov(__(esi), cl);
-					subi(esp, 1);
-					mov(__(esp), al);
+				LoadVarAddrToReg(f1, eax);
+				mov(esi, __ebp(tmp->get_externed()));
+				mov(cl, __(esi));
+				inc(cl);
+				mov(__(esi), cl);
+				subi(esp, 1);
+				mov(__(esp), al);
 
-					cmp(cl, 255);
-					jna(lab_exit);
-					call(STR2LONG);
-					label(lab_exit);
-					exchg_esp();
-				}
+				cmp(cl, 255);
+				jna(lab_exit);
+				call(STR2LONG);
+				label(lab_exit);
+				exchg_esp();
 			}
 			break;
 		}
 		case rev_int: {
-			if(f1->get_local_addr() == 0){
-				mov(eax, __("@var_" + f1->get_name()));
-			}
-			else {
-				if (f1->get_local_addr() < 0) {
-					mov(eax, __ebp(f1->get_local_addr()));
-				}
-				else {
-					mov(eax, _ebp(f1->get_local_addr()));
-				}
-			}
-			if (f2->get_local_addr() == 0) {
-				mov(ebx, __("@var_" + f2->get_name()));
-			}
-			else {
-				if (f2->get_local_addr() < 0) {
-					mov(ebx, __ebp(f2->get_local_addr()));
-				}
-				else {
-					mov(ebx, _ebp(f2->get_local_addr()));
-				}
-			}
+			LoadVarAddrToReg(f1, eax);
+			LoadVarAddrToReg(f2,ebx);
 			switch (op)
 			{
 				case add:{
@@ -509,29 +447,8 @@ VarRecord* Generator::GenerateExp(VarRecord* f1, symbol op, VarRecord* f2, int& 
 			else {
 				lab_loop = GenerateName("lab", null, "base_cmp");
 				lab_exit = GenerateName("lab", null, "base_cmp_exit");
-				if (f1->get_local_addr() == 0) {
-					mov(eax, __("@var_" + f1->get_name()));
-				}
-				else {
-					if (f1->get_local_addr() < 0) {
-						mov(eax, __ebp(f1->get_local_addr()));
-					}
-					else {
-						mov(eax, _ebp(f1->get_local_addr()));
-					}
-				}
-
-				if (f1->get_local_addr() == 0) {
-					mov(ebx, __("@var_" + f2->get_name()));
-				}
-				else {
-					if (f2->get_local_addr() < 0) {
-						mov(ebx, __ebp(f2->get_local_addr()));
-					}
-					else {
-						mov(ebx, _ebp(f2->get_local_addr()));
-					}
-				}
+				LoadVarAddrToReg(f1,eax);
+				LoadVarAddrToReg(f2, ebx);
 				cmp(eax, ebx);
 				switch (op) {
 					case gt:{
@@ -668,19 +585,9 @@ VarRecord* Generator::GenerateAssign(VarRecord* des, VarRecord* src, int& var_nu
 			else {
 				lea(eax, _ebp(des->get_local_addr()));
 			}
-			if (src->get_local_addr() == 0) {
-				mov(ebx, __("@var_" + src->get_name()));
-			}
-			else {
-				if (src->get_local_addr() < 0) {
-					mov(ebx, __ebp(src->get_local_addr()));
-				}
-				else {
-					mov(ebx, _ebp(src->get_local_addr()));
-				}
-			}
-			mov(__(eax), ebx);
 		}
+		LoadVarAddrToReg(src, ebx);
+		mov(__(eax), ebx);
 	}
 	return des;
 }
@@ -694,28 +601,10 @@ void Generator::GenerateReturn(VarRecord* ret, int& var_number,FunRecord&fun) {
 			VarRecord tmp;
 			string temp_name = "";
 			tmp.Init(rev_string, temp_name);
-			ret = GenerateExp(&tmp, add, ret, var_number, fun);
+			ret = GenerateExp(&tmp, add, ret, var_number, fun);		
 			
-			if (ret->get_local_addr() < 0) {
-				mov(eax, __ebp(ret->get_local_addr()));
-			}
-			else {
-				mov(eax, _ebp(ret->get_local_addr()));
-			}
 		}
-		else {
-			if (ret->get_local_addr() == 0) {
-				mov(eax, __("@var_" + ret->get_name()));
-			}
-			else {
-				if (ret->get_local_addr() < 0) {
-					mov(eax, __ebp(ret->get_local_addr()));
-				}
-				else {
-					mov(eax, _ebp(ret->get_local_addr()));
-				}
-			}
-		}
+		LoadVarAddrToReg(ret, eax);
 	}
 	// 函数结束清理工作
 	mov(ebx, __(EBP));
@@ -790,17 +679,7 @@ void Generator::GenerateCondition(VarRecord* condition) {
 		SemanticError(void_non_cond);
 	}
 	else {
-		if (condition->get_local_addr() == 0) {
-			mov(eax, __("@var_" + condition->get_name()));
-		}
-		else {
-			if (condition->get_local_addr() < 0) {
-				mov(eax, __ebp(condition->get_local_addr()));
-			}
-			else {
-				mov(eax, _ebp(condition->get_local_addr()));
-			}
-		}
+		LoadVarAddrToReg(condition);
 		cmp(eax, 0);
 	}
 	return;
@@ -1099,14 +978,14 @@ void Generator::sys_write(int fd, string buf, string count) {
 
 void Generator::LoadVarAddrToReg(VarRecord* var, string reg) {
 	if (var->get_local_addr() == 0) {
-		mov(__("@var_" + var->get_name()), reg);
+		mov(reg, __("@var_" + var->get_name()));
 	}
 	else {
 		if (var->get_local_addr() < 0) {
-			mov(__ebp(var->get_local_addr()), reg);
+			mov(reg, __ebp(var->get_local_addr()));
 		}
 		else {
-			mov(_ebp(var->get_local_addr()), reg);
+			mov(reg, _ebp(var->get_local_addr()));
 		}
 	}
 }
@@ -1133,10 +1012,8 @@ void Generator::GenerateCaseTable(int start,int end,int switch_id,vector<int>&el
 		if(gen){
 			jmp(DEFAULT_END(to_string(switch_id)));
 		}
-		
 		GenerateCaseTable(start, jmp_id - 1, switch_id, element);
 		GenerateCaseTable(jmp_id + 1, end, switch_id, element);
-
 	}
 	else {
 		return;

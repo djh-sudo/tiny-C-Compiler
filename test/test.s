@@ -800,45 +800,7 @@ main:
 	lea esp,[ebp-4]
 	jmp @switch_tab_1_end
 	lea esp,[ebp-4]
-@switch_1_end:
-	lea esp,[ebp-4]
-	jmp @switch_tab_1_end
-@switch_1_table:
-	mov [ebp-4],eax
-	cmp eax,100
-	jg @default_1_end
-	cmp eax,1
-	jl @default_1_end
-@case_1_2_jmp:
-	cmp eax,10
-	je @case_1_10_lab
-	jl @case_1_0_jmp
-	jg @case_1_3_jmp
-@case_1_0_jmp:
-	cmp eax,1
-	je @case_1_1_lab
-	jg @case_1_1_jmp
-	jmp @default_1_end
-@case_1_1_jmp:
-	cmp eax,2
-	je @case_1_2_lab
-	jmp @default_1_end
-@case_1_3_jmp:
-	cmp eax,50
-	je @case_1_50_lab
-	jg @case_1_4_jmp
-	jmp @default_1_end
-@case_1_4_jmp:
-	cmp eax,100
-	je @case_1_100_lab
-	jmp @default_1_end
-@default_1_end:
-	jmp @switch_1_end
-@switch_tab_1_end:
-	push 0
-	lea eax,[ebp-8]
-	mov ebx,[ebp-4]
-	mov [eax],ebx
+@case_1_999_lab:
 	push 6
 	push -1
 	mov eax,[@s_esp]
@@ -847,7 +809,7 @@ main:
 	mov eax,@str_6_len
 	sub esp,1
 	mov [esp],al
-	mov [ebp-16],esp
+	mov [ebp-12],esp
 	cmp eax,0
 	je @lab_cpystr2_exit_119
 	mov ecx,@str_6_len
@@ -868,8 +830,8 @@ main:
 	mov eax,[@s_esp]
 	mov [@s_esp],esp
 	mov esp,eax
-	mov eax,[ebp-8]
-	mov esi,[ebp-16]
+	mov eax,[ebp-4]
+	mov esi,[ebp-12]
 	mov edi,0
 	cmp eax,0
 	jge @lab_numsign1_exit_123
@@ -909,12 +871,12 @@ main:
 	mov eax,[@s_esp]
 	mov [@s_esp],esp
 	mov esp,eax
-	mov ebx,[ebp-16]
+	mov ebx,[ebp-12]
 	mov eax,0
 	mov al,[ebx]
 	sub esp,1
 	mov [esp],al
-	mov [ebp-20],esp
+	mov [ebp-16],esp
 	cmp eax,0
 	je @lab_cpystr2_exit_127
 	mov ecx,0
@@ -933,6 +895,191 @@ main:
 	mov eax,[@s_esp]
 	mov [@s_esp],esp
 	mov esp,eax
+	mov ecx,[ebp-16]
+	mov edx,0
+	mov dl,[ecx]
+	sub ecx,edx
+	mov ebx,1
+	mov eax,4
+	int 128
+	lea esp,[ebp-4]
+	jmp @switch_tab_1_end
+	lea esp,[ebp-4]
+@default_1_lab:
+	push 7
+	push -1
+	mov eax,[@s_esp]
+	mov [@s_esp],esp
+	mov esp,eax
+	mov eax,@str_7_len
+	sub esp,1
+	mov [esp],al
+	mov [ebp-12],esp
+	cmp eax,0
+	je @lab_cpystr2_exit_133
+	mov ecx,@str_7_len
+	dec ecx
+	mov esi,@str_7
+@lab_cpystr2_132:
+	cmp ecx,-1
+	je @lab_cpystr2_exit_133
+	mov dl,[esi+ecx]
+	sub esp,1
+	mov [esp],dl
+	dec ecx
+	jmp @lab_cpystr2_132
+@lab_cpystr2_exit_133:
+	mov eax,[@s_esp]
+	mov [@s_esp],esp
+	mov esp,eax
+	mov ecx,[ebp-12]
+	mov edx,0
+	mov dl,[ecx]
+	sub ecx,edx
+	mov ebx,1
+	mov eax,4
+	int 128
+	lea esp,[ebp-4]
+	jmp @switch_tab_1_end
+	lea esp,[ebp-4]
+	jmp @switch_1_end
+@switch_1_end:
+	lea esp,[ebp-4]
+	jmp @switch_tab_1_end
+@switch_1_table:
+	mov eax,[ebp-4]
+	cmp eax,999
+	jg @default_1_end
+	cmp eax,1
+	jl @default_1_end
+@case_1_2_jmp:
+	cmp eax,10
+	je @case_1_10_lab
+	jl @case_1_0_jmp
+	jg @case_1_4_jmp
+@case_1_0_jmp:
+	cmp eax,1
+	je @case_1_1_lab
+	jg @case_1_1_jmp
+	jmp @default_1_end
+@case_1_1_jmp:
+	cmp eax,2
+	je @case_1_2_lab
+	jmp @default_1_end
+@case_1_4_jmp:
+	cmp eax,100
+	je @case_1_100_lab
+	jl @case_1_3_jmp
+	jg @case_1_5_jmp
+@case_1_3_jmp:
+	cmp eax,50
+	je @case_1_50_lab
+	jmp @default_1_end
+@case_1_5_jmp:
+	cmp eax,999
+	je @case_1_999_lab
+	jmp @default_1_end
+@default_1_end:
+	jmp @default_1_lab
+@switch_tab_1_end:
+	push 0
+	lea eax,[ebp-8]
+	mov ebx,[ebp-4]
+	mov [eax],ebx
+	push 8
+	push -1
+	mov eax,[@s_esp]
+	mov [@s_esp],esp
+	mov esp,eax
+	mov eax,@str_8_len
+	sub esp,1
+	mov [esp],al
+	mov [ebp-16],esp
+	cmp eax,0
+	je @lab_cpystr2_exit_139
+	mov ecx,@str_8_len
+	dec ecx
+	mov esi,@str_8
+@lab_cpystr2_138:
+	cmp ecx,-1
+	je @lab_cpystr2_exit_139
+	mov dl,[esi+ecx]
+	sub esp,1
+	mov [esp],dl
+	dec ecx
+	jmp @lab_cpystr2_138
+@lab_cpystr2_exit_139:
+	mov eax,[@s_esp]
+	mov [@s_esp],esp
+	mov esp,eax
+	mov eax,[@s_esp]
+	mov [@s_esp],esp
+	mov esp,eax
+	mov eax,[ebp-8]
+	mov esi,[ebp-16]
+	mov edi,0
+	cmp eax,0
+	jge @lab_numsign1_exit_143
+@lab_numsign1_142:
+	neg eax
+	mov edi,1
+@lab_numsign1_exit_143:
+	mov ebx,10
+@lab_num2str1_140:
+	mov edx,0
+	idiv ebx
+	mov cl,[esi]
+	inc cl
+	mov [esi],cl
+	sub esp,1
+	add dl,48
+	mov [esp],dl
+	cmp eax,0
+	jne @lab_num2str1_140
+	cmp edi,0
+	je @lab_numsign_add_144
+	sub esp,1
+	mov ecx,45
+	mov [esp],cl
+	mov cl,[esi]
+	inc cl
+	mov [esi],cl
+@lab_numsign_add_144:
+	cmp cl,255
+	jna @lab_num2str1_exit_141
+	call @str2long
+@lab_num2str1_exit_141:
+	mov eax,[@s_esp]
+	mov [@s_esp],esp
+	mov esp,eax
+	push -1
+	mov eax,[@s_esp]
+	mov [@s_esp],esp
+	mov esp,eax
+	mov ebx,[ebp-16]
+	mov eax,0
+	mov al,[ebx]
+	sub esp,1
+	mov [esp],al
+	mov [ebp-20],esp
+	cmp eax,0
+	je @lab_cpystr2_exit_147
+	mov ecx,0
+	mov esi,ebx
+	dec esi
+	neg eax
+@lab_cpystr2_146:
+	cmp ecx,eax
+	je @lab_cpystr2_exit_147
+	mov dl,[esi+ecx]
+	sub esp,1
+	mov [esp],dl
+	dec ecx
+	jmp @lab_cpystr2_146
+@lab_cpystr2_exit_147:
+	mov eax,[@s_esp]
+	mov [@s_esp],esp
+	mov esp,eax
 	mov ecx,[ebp-20]
 	mov edx,0
 	mov dl,[ecx]
@@ -940,8 +1087,129 @@ main:
 	mov ebx,1
 	mov eax,4
 	int 128
+	push 9
+	push -1
+	mov eax,[@s_esp]
+	mov [@s_esp],esp
+	mov esp,eax
+	mov eax,[ebp-8]
+	sub esp,1
+	mov ecx,0
+	mov [esp],cl
+	mov esi,esp
+	mov [ebp-28],esp
+	mov edi,0
+	cmp eax,0
+	jge @lab_numsign2_exit_155
+@lab_numsign2_154:
+	neg eax
+	mov edi,1
+@lab_numsign2_exit_155:
+	mov ebx,10
+@lab_num2str2_152:
+	mov edx,0
+	idiv ebx
+	mov cl,[esi]
+	inc cl
+	mov [esi],cl
+	sub esp,1
+	add dl,48
+	mov [esp],dl
+	cmp eax,0
+	jne @lab_num2str2_152
+	cmp edi,0
+	je @lab_num2str2_exit_153
+	sub esp,1
+	mov ecx,45
+	mov [esp],cl
+	mov cl,[esi]
+	inc cl
+	mov [esi],cl
+@lab_num2str2_exit_153:
+	mov eax,[@s_esp]
+	mov [@s_esp],esp
+	mov esp,eax
+	mov eax,[@s_esp]
+	mov [@s_esp],esp
+	mov esp,eax
+	mov eax,@str_9_len
+	cmp eax,0
+	je @lab_cpystr1_exit_157
+	mov ebx,[ebp-28]
+	mov edx,0
+	mov dl,[ebx]
+	add edx,eax
+	mov [ebx],dl
+	mov ecx,@str_9_len
+	dec ecx
+	mov esi,@str_9
+	cmp edx,255
+	jna @lab_cpystr1_156
+	call @str2long
+@lab_cpystr1_156:
+	cmp ecx,-1
+	je @lab_cpystr1_exit_157
+	mov al,[esi+ecx]
+	sub esp,1
+	mov [esp],al
+	dec ecx
+	jmp @lab_cpystr1_156
+@lab_cpystr1_exit_157:
+	mov eax,[@s_esp]
+	mov [@s_esp],esp
+	mov esp,eax
+	mov ecx,0
+	mov esi,[ebp-28]
+	mov cl,[esi]
+	cmp ecx,0
+	je @lab_cpy2gstr_exit_159
+	mov [@str_t_len],cl
+	sub esi,ecx
+	mov edi,@str_t
+	mov edx,0
+@lab_cpy2gstr_158:
+	mov al,[esi+edx]
+	mov [edi+edx],al
+	inc edx
+	cmp edx,ecx
+	je @lab_cpy2gstr_exit_159
+	jmp @lab_cpy2gstr_158
+@lab_cpy2gstr_exit_159:
+	push -1
+	mov eax,[@s_esp]
+	mov [@s_esp],esp
+	mov esp,eax
+	mov eax,0
+	mov al,[@str_t_len]
+	sub esp,1
+	mov [esp],al
+	mov [ebp-32],esp
+	cmp eax,0
+	je @lab_cpystr2_exit_162
+	dec eax
+	mov ecx,eax
+	mov esi,@str_t
+@lab_cpystr2_161:
+	cmp ecx,-1
+	je @lab_cpystr2_exit_162
+	mov dl,[esi+ecx]
+	sub esp,1
+	mov [esp],dl
+	dec ecx
+	jmp @lab_cpystr2_161
+@lab_cpystr2_exit_162:
+	mov eax,[@s_esp]
+	mov [@s_esp],esp
+	mov esp,eax
+	mov ecx,[ebp-32]
+	mov edx,0
+	mov dl,[ecx]
+	sub ecx,edx
+	mov ebx,1
+	mov eax,4
+	int 128
 	push 0
-	mov eax,[ebp-24]
+	mov eax,[ebp-36]
 	mov ebx,[@s_ebp]
 	mov [@s_esp],ebx
 	mov ebx,[@s_esp]
@@ -956,6 +1224,8 @@ main:
 	pop ebp
 	ret
 section .data
+	@str_t times 255 db 0
+	@str_t_len db 0
 	@str_1 db 10
 	@str_1_len equ 1
 	@str_2 db 10
@@ -968,4 +1238,10 @@ section .data
 	@str_5_len equ 1
 	@str_6 db 10
 	@str_6_len equ 1
+	@str_7 db "this is default!",10
+	@str_7_len equ 17
+	@str_8 db 10
+	@str_8_len equ 1
+	@str_9 db "213"
+	@str_9_len equ 3
 section .bss

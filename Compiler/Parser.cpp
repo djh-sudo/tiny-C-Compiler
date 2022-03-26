@@ -26,7 +26,7 @@ void Parser::Init(const char* file_name) {
 	bool result = lexer.Init(file_name);
 	if (result) {
 		this->file_name = file_name;
-		xSUCC("%s", "\nLexer initial successfully! ...\n");
+		xSUCC("%s", "\nLexer initial successfully ...\n");
 		string output = file_name;
 		int index = output.find_last_of("/");
 		if (index == string::npos) {
@@ -39,7 +39,7 @@ void Parser::Init(const char* file_name) {
 			string output = string(file_name).substr(0, index);
 			result = Generator::Init((output + ".s").c_str());
 			if (result) {
-				xSUCC("%s", "Generator initial successfully!\n");
+				xSUCC("%s", "Generator initial successfully ...\n");
 				Generator::section("section .text");
 			}
 			else {
@@ -909,11 +909,13 @@ void Parser::CaseState(int& level, int& init_number, int addr, VarRecord* var) {
 		this->has_default = true;
 		int init = 0;
 		int block_addr = Generator::GenerateBlock(-1, fun);
-
+		
 		Block(init, level, switch_id, block_addr);
+		
 		Generator::GenerateBlock(block_addr, fun);
 		Generator::jmp(SWITCH_END(to_string(switch_id)));
-		return;
+
+		CaseState(level, init_number, addr, var);
 	}
 	else if (Match(rbrac)) {
 		Generator::label(SWITCH_END(to_string(switch_id)));
@@ -922,6 +924,7 @@ void Parser::CaseState(int& level, int& init_number, int addr, VarRecord* var) {
 		Generator::label(CASE_TABLE(to_string(switch_id)));
 		CaseHandle(var);
 		Generator::label(CASE_TABLE_END(to_string(switch_id)));
+		this->has_default = false;
 	}
 	else {
 		SyntaxError(switch_error);

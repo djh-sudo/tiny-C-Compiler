@@ -1,3 +1,4 @@
+string t;
 int main(){
 	int a;
 	in >> a ;
@@ -37,8 +38,18 @@ int main(){
 			}
 			break;
 		}
+		case 999:{
+			out << a+"\n";
+			break;
+		}
+		default:{
+			out<<"this is default!\n";
+			break;
+		}
 	}
 	int g=a;
 	out<<g+"\n";
+	t = "213"+g;
+	out<<t;
 	return 0;
 }

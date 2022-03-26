@@ -21,11 +21,11 @@ Lexer::Lexer() {
 bool Lexer::Init(const char* file_name) {
 	fin = fopen(file_name, "r");
 	if (fin != nullptr) {
-		cout << "file [" << file_name << "] open successfully!" << endl;
+		xSUCC("%s%s%s", "file [", file_name, "] open successfully!\n");
 		return true;
 	}
 	else {
-		cout << "file [" << file_name << "] open failed!" << endl;
+		xPANIC("%s%s%s", "file [", file_name, "] open failed!\n");
 		return false;
 	}
 }
