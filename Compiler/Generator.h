@@ -91,7 +91,9 @@ public:
 	static void other_ass(string content);
 	static void other(string content);
 	static void db(string content);
-	
+	//
+	static void LoadVarAddrToReg(VarRecord* var, string reg = eax);
+	static void GenerateCaseTable(int start, int end, int switch_id, vector<int>& element);
 	// 
 	static void sys_exit(int code);
 	static void sys_write(int fd, string buf, int count);

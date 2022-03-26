@@ -1,4 +1,6 @@
 #include <string>
+#include <algorithm>
+#include <vector>
 #include "Parser.h"
 #include "Generator.h"
 
@@ -10,10 +12,13 @@ Parser::Parser(){
 	this->if_id = 0;
 	this->while_id = 0;
 	this->for_id = 0;
+	this->switch_id = 0;
 	this->syntax_error = 0;
 	this->compiler_ok = false;
 	this->ident_only = false;
-	this->for_level.clear();
+	this->has_default = false;
+	this->break_level.clear();
+	this->case_number.clear();
 }
 
 
@@ -227,7 +232,7 @@ void Parser::FunTail(symbol type, string name){
 		     token == rev_while || token == rev_return ||
 		     token == rev_break || token == rev_continue ||
 		     token == rev_in || token == rev_out ||
-		     token == rbrac) {
+		     token == rbrac|| token == rev_switch) {
 		SyntaxError(lbrac_lost);
 		this->wait = true;
 		Block(0, level, 0, 0);
@@ -378,7 +383,7 @@ void Parser::SubProgram(int& var_number, int& level, int loop_id, int addr) {
 	if (token == semicon || token == rev_while || token == rev_if ||
 		token == rev_return || token == ident || token == rev_break ||
 		token == rev_continue || token == rev_in || token == rev_out||
-		token == rev_for) {
+		token == rev_for || token == rev_switch) {
 		Statement(var_number, level, loop_id, addr);
 		SubProgram(var_number, level, loop_id, addr);
 	}
@@ -489,15 +494,15 @@ void Parser::Statement(int& var_number, int& level, int loop_id, int addr) {
 			break;
 		}
 		case rev_while: {
-			this->for_level.push_back(0);
+			this->break_level.push_back(0);
 			WhileState(level);
-			for_level.pop_back();
+			break_level.pop_back();
 			break;
 		}
 		case rev_for: {
-			this->for_level.push_back(1);
+			this->break_level.push_back(1);
 			ForState(level);
-			this->for_level.pop_back();
+			this->break_level.pop_back();
 			break;
 		}
 		case rev_if: {
@@ -509,7 +514,7 @@ void Parser::Statement(int& var_number, int& level, int loop_id, int addr) {
 			if (token == ident || token == rev_while || token == rev_if ||
 				token == rev_return || token == rev_break || token == rev_continue ||
 				token == rev_in || token == rev_out || token == rbrac
-				|| token == rev_for) {
+				|| token == rev_for || token == rev_switch) {
 				this->wait = true;
 				SyntaxError(semicon_lost);
 			}
@@ -520,11 +525,14 @@ void Parser::Statement(int& var_number, int& level, int loop_id, int addr) {
 			// gen code
 			if (loop_id != 0) {
 				Generator::GenerateBlock(addr, fun);
-				if (for_level.back() == 0) {
+				if (break_level.back() == 0) {
 					Generator::jmp(WHILE_EXIT(to_string(loop_id)));
 				}
-				else {
+				else if(break_level.back() == 1){
 					Generator::jmp(FOR_EXIT(to_string(loop_id)));
+				}
+				else if(break_level.back() == 2){
+					Generator::jmp(CASE_TABLE_END(to_string(loop_id)));
 				}
 			}
 			else {
@@ -537,7 +545,7 @@ void Parser::Statement(int& var_number, int& level, int loop_id, int addr) {
 			if (token == ident || token == rev_while || token == rev_if ||
 				token == rev_return || token == rev_break || token == rev_continue ||
 				token == rev_in || token == rev_out || token == rbrac||
-				token == rev_for) {
+				token == rev_for|| token == rev_switch) {
 				SyntaxError(semicon_lost);
 				this->wait = true;
 			}
@@ -548,11 +556,14 @@ void Parser::Statement(int& var_number, int& level, int loop_id, int addr) {
 			// gen code
 			if (loop_id != 0) {
 				Generator::GenerateBlock(addr, fun);
-				if (for_level.back() == 0) {
+				if (break_level.back() == 0) {
 					Generator::jmp(WHILE_LOOP(to_string(loop_id)));
 				}
-				else {
+				else if(break_level.back() == 1){
 					Generator::jmp(FOR_ITER(to_string(loop_id)));
+				}
+				else {
+					 SyntaxError(continue_non_switch);
 				}
 			}
 			else {
@@ -597,6 +608,12 @@ void Parser::Statement(int& var_number, int& level, int loop_id, int addr) {
 				SyntaxError(semicon_lost);
 				this->wait = true;
 			}
+			break;
+		}
+		case rev_switch: {
+			this->break_level.push_back(2);
+			SwitchState(level);
+			this->break_level.pop_back();
 			break;
 		}
 		case ident: {
@@ -644,7 +661,8 @@ void Parser::WhileState(int& level) {
 			token == rev_return || token == rev_break || token == rev_continue ||
 			token == semicon || token == rev_in || token == rev_out ||
 			token == ident || token == rev_void || token == rev_int ||
-			token == rev_string || token == rev_char || token == rev_for) {
+			token == rev_string || token == rev_char || token == rev_for ||
+			token == rev_switch) {
 			SyntaxError(rparen_lost);
 			this->wait = true;
 		}
@@ -808,6 +826,146 @@ void Parser::ForEnd(int& init_number, int& level, int loop_id, int addr, int add
 }
 
 
+void Parser::SwitchState(int& level) {
+	switch_id++;
+	NextToken();
+	if (!Match(lparen)) {
+		if (token == ident || token == number || token == lbrac ||
+			token == chara || token == strings || token == rparen) {
+			SyntaxError(lparen_lost);
+			this->wait = true;
+		}
+		else {
+			SyntaxError(lparen_wrong);
+		}
+	}
+	int block_addr = Generator::GenerateBlock(-1, fun);
+	int init = 0;
+	VarRecord* var = Expr(init);
+	Generator::jmp(CASE_TABLE(to_string(switch_id)));
+	NextToken();
+	if (!Match(rparen)) {
+		if (token == ident || token == number || token == lbrac ||
+			token == chara || token == strings || token == rparen) {
+			SyntaxError(rparen_lost);
+			this->wait = true;
+		}
+		else {
+			SyntaxError(rparen_wrong);
+		}
+	}
+	NextToken();
+	if (!Match(lbrac)) {
+		SyntaxError(rparen_lost);
+	}
+	CaseState(level, init, block_addr, var);
+}
+
+void Parser::CaseState(int& level, int& init_number, int addr, VarRecord* var) {
+	NextToken();
+	if (Match(rev_case)) {
+		NextToken();
+		if (!Match(number) && !Match(chara)) {
+			SyntaxError(case_lab_error);
+		}
+		else {
+			int case_lab = 0;
+			if (token == number) {
+				Generator::label(CASE(to_string(switch_id), to_string(lexer.get_digit())));
+				case_lab = lexer.get_digit();
+			}
+			else if (token == chara) {
+				Generator::label(CASE(to_string(switch_id), to_string(int(lexer.get_digit()))));
+				case_lab = lexer.get_letter();
+			}
+			vector<int>::iterator it = find(case_number.begin(), case_number.end(), case_lab);
+			if (it != case_number.end()) {
+				SyntaxError(case_lab_dup);
+			}
+			else {
+				case_number.push_back(case_lab);
+			}
+
+		}
+		NextToken();
+		if (!Match(colon)) {
+			SyntaxError(colon_lost);
+			this->wait = true;
+		}
+		int init = 0;
+		int block_addr = Generator::GenerateBlock(-1, fun);
+
+		Block(init, level, switch_id, block_addr);
+		Generator::GenerateBlock(block_addr, fun);
+		CaseState(level, init_number, addr, var);
+	}
+	else if(Match(rev_default)){
+		Generator::label(DEFAULT(to_string(switch_id)));
+		NextToken();
+		if (!Match(colon)) {
+			SyntaxError(colon_lost);
+			this->wait = true;
+		}
+		this->has_default = true;
+		int init = 0;
+		int block_addr = Generator::GenerateBlock(-1, fun);
+
+		Block(init, level, switch_id, block_addr);
+		Generator::GenerateBlock(block_addr, fun);
+		Generator::jmp(SWITCH_END(to_string(switch_id)));
+		return;
+	}
+	else if (Match(rbrac)) {
+		Generator::label(SWITCH_END(to_string(switch_id)));
+		Generator::GenerateBlock(addr, fun);
+		Generator::jmp(CASE_TABLE_END(to_string(switch_id)));
+		Generator::label(CASE_TABLE(to_string(switch_id)));
+		CaseHandle(var);
+		Generator::label(CASE_TABLE_END(to_string(switch_id)));
+	}
+	else {
+		SyntaxError(switch_error);
+	}
+}
+
+void Parser::CaseHandle(VarRecord* var) {
+	if (case_number.size() <= 4) {
+		Generator::LoadVarAddrToReg(var);
+		for (int i = 0; i < case_number.size(); i++) {
+			Generator::cmp(eax, case_number[i]);
+			Generator::je(CASE(to_string(switch_id), to_string(case_number[i])));
+		}
+		if (has_default) {
+			Generator::jmp(DEFAULT(to_string(switch_id)));
+		}
+		else {
+			Generator::jmp(SWITCH_END(to_string(switch_id)));
+		}
+	}
+	else {
+		sort(case_number.begin(), case_number.end());
+		int min_number = case_number[0];
+		int max_number = case_number.back();
+
+		Generator::LoadVarAddrToReg(var);
+		Generator::cmp(eax, max_number);
+		Generator::jg(DEFAULT_END(to_string(switch_id)));
+		Generator::cmp(eax, min_number);
+		Generator::jl(DEFAULT_END(to_string(switch_id)));
+		int start = 0;
+		int end = case_number.size() - 1;
+		Generator::GenerateCaseTable(start, end, switch_id, case_number);
+		Generator::label(DEFAULT_END(to_string(switch_id)));
+		if (has_default) {
+			Generator::jmp(DEFAULT(to_string(switch_id)));
+		}
+		else {
+			Generator::jmp(SWITCH_END(to_string(switch_id)));
+		}
+	}
+}
+
+
 void Parser::ReturnState(int& var_number, int& level) {
 	ReturnTail(var_number, level);
 	NextToken();
@@ -830,7 +988,7 @@ void Parser::ReturnTail(int& var_number, int& level) {
 		token == strings || token == lparen) {
 		this->wait = true;
 		VarRecord* ret = Expr(var_number);
-		// ÓïÒå¼ì²é
+		// semantic check
 		if (ret != nullptr && (ret->get_type() != fun.get_type())) {
 			// semantic error
 			Generator::SemanticError(ret_type_error);
@@ -1004,7 +1162,6 @@ VarRecord* Parser::ExprTail(VarRecord* factor, int& var_number) {
 			token == strings || token == lparen) {
 			SyntaxError(op_wrong);
 			this->wait = true;
-			// todo
 			Expr(var_number);
 		}
 		else {
@@ -1246,13 +1403,34 @@ void Parser::SyntaxError(error_c error_code) {
 			cout << "not an effective expression" << endl;
 			break;
 		}
+		case continue_non_switch: {
+			cout << "continue can't in switch-case expression!" << endl;
+			break;
+		}
+		case case_lab_error: {
+			cout << "case-lab only be constant number!" << endl;
+			break;
+		}
+		case case_lab_dup: {
+			cout << "case-lab duplicated!" << endl;
+			break;
+		}
+		case colon_lost: {
+			cout << "colon(:) maybe lost!" << endl;
+			break;
+		}
+		case switch_error: {
+			cout << "not an effective case-block in switch statement!" << endl;
+			break;
+		}
 		default:
 			break;
 	}
 }
 
 Parser::~Parser() {
-	this->for_level.clear();
+	this->break_level.clear();
+	this->case_number.clear();
 	Generator::over();
 }
 

@@ -1,13 +1,44 @@
 int main(){
-	for(int i=0;i<10;i=i+1){
-		for(int j=0;j<10;j=j+1){
-			out << i*j + " ";
+	int a;
+	in >> a ;
+	switch(a){
+		case 100:{
+			for(int i=0;i<20;i=i+1){
+				out << a*a*a + "\n";
+				break;
+			}
+			break;
 		}
-		if(i>5){
-			continue;
+		case 1:{
+			for(int i=0;i<20;i=i+1){
+				out << a*a*a + "\n";
+				break;
+			}
+			break;
 		}
-		out <<"-\n";
-		
+		case 2:{
+			for(int i=0;i<20;i=i+1){
+				out << a*a*a + "\n";
+				break;
+			}
+			break;
+		}
+		case 10:{
+			for(int i=0;i<20;i=i+1){
+				out << a*a*a + "\n";
+				break;
+			}
+			break;
+		}
+		case 50:{
+			for(int i=0;i<20;i=i+1){
+				out << a*a*a + "\n";
+				break;
+			}
+			break;
+		}
 	}
+	int g=a;
+	out<<g+"\n";
 	return 0;
 }

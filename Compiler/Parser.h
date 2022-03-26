@@ -8,19 +8,23 @@
 class Parser
 {
 private:
-	VarRecord var;
-	FunRecord fun;
-	vector<int>for_level;
-	Lexer lexer;
-	bool wait; // 是否读入下一个token
+	VarRecord var;         // Variable
+	FunRecord fun;         // function
+	vector<int>break_level;// break in for or while?
+	vector<int>case_number;// case number
+	Lexer lexer;           // lexer
+	bool wait;             // skip read next token
 	symbol old_token;
 	symbol token;
 	bool compiler_ok;
 	int syntax_error;
+
 	int while_id;
 	int if_id;
 	int for_id;
+	int switch_id;
 	bool ident_only;
+	bool has_default;
 	string file_name;
 
 public:
@@ -51,6 +55,9 @@ public:
 	void ForCondition(int& var_number, int& level, int addr_end);
 	void ForEnd(int& var_number, int& level, int loop_id, int addr, int addr_end);
 
+	void SwitchState(int& level);
+	void CaseState(int& level, int& init_number, int addr, VarRecord* var);
+	void CaseHandle(VarRecord* var);
 	void ReturnState(int& var_number, int& level);
 	void ReturnTail(int& var_number, int& level);
 	VarRecord* IdentTail(string name, int& var_number);

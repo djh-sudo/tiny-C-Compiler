@@ -43,6 +43,7 @@ VarRecord* Generator::GenerateExp(VarRecord* f1, symbol op, VarRecord* f2, int& 
 	if (!f1 || !f2) {
 		return nullptr;
 	}
+
 	if (f1->get_type() == rev_void || f2->get_type() == rev_void) {
 		SemanticError(void_non_calc);
 		return nullptr;
@@ -66,6 +67,7 @@ VarRecord* Generator::GenerateExp(VarRecord* f1, symbol op, VarRecord* f2, int& 
 
 	// create var
 	VarRecord* tmp = fun.CreateTmpVar(ret_type, false, var_number);
+	
 	if (Generator::for_flag != -1) {
 		Generator::jmp(FOR_BLOCK(to_string(Generator::for_flag)));
 		Generator::label(FOR_ITER(to_string(Generator::for_flag)));
@@ -1095,6 +1097,53 @@ void Generator::sys_write(int fd, string buf, string count) {
 	syscall(128);
 }
 
+void Generator::LoadVarAddrToReg(VarRecord* var, string reg) {
+	if (var->get_local_addr() == 0) {
+		mov(__("@var_" + var->get_name()), reg);
+	}
+	else {
+		if (var->get_local_addr() < 0) {
+			mov(__ebp(var->get_local_addr()), reg);
+		}
+		else {
+			mov(_ebp(var->get_local_addr()), reg);
+		}
+	}
+}
+
+void Generator::GenerateCaseTable(int start,int end,int switch_id,vector<int>&element) {
+	int jmp_id = start + ((end - start) >> 1);
+	if (start <= end) {
+		label(CASE_JMP(to_string(switch_id), to_string(jmp_id)));
+		cmp(eax, element[jmp_id]);
+		je(CASE(to_string(switch_id), to_string(element[jmp_id])));
+		bool gen = false;
+		if (jmp_id != start) {
+			jl(CASE_JMP(to_string(switch_id), to_string((start + jmp_id - 1) / 2)));
+		}
+		else {
+			gen = true;
+		}
+		if (jmp_id != end) {
+			jg(CASE_JMP(to_string(switch_id), to_string((jmp_id + 1 + end) / 2)));
+		}
+		else {
+			gen = true;
+		}
+		if(gen){
+			jmp(DEFAULT_END(to_string(switch_id)));
+		}
+		
+		GenerateCaseTable(start, jmp_id - 1, switch_id, element);
+		GenerateCaseTable(jmp_id + 1, end, switch_id, element);
+
+	}
+	else {
+		return;
+	}
+
+}
+
 void Generator::SemanticError(error_c code, string info) {
 	error = true;
 	cout << "[Semantic error at " << line_number << "] ";
@@ -1185,6 +1234,7 @@ void Generator::SemanticError(error_c code, string info) {
 			break;
 		}
 	}
+	exit(1);
 }
 
 void Generator::over() {

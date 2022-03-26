@@ -16,24 +16,24 @@ static char symbol_name[][ID_LEN]{
 	// 输入>>，输出<<
 	"input", "output",
 	// 界符，char,string,;,(,),{,}
-	"comma", "chara", "strings", "semicon", "lparen", "rparen", "lbrac", "rbrac",
+	"comma", "chara", "strings", "semicon", "lparen", "rparen", "lbrac", "rbrac","colon"
 	// 保留字
 	"min",
-	"rev_break", "rev_char", "rev_continue", "rev_else", "rev_extern","rev_for",
+	"rev_break","rev_case" "rev_char", "rev_continue","rev_default" ,"rev_else", "rev_extern","rev_for",
 	"rev_if", "rev_in", "rev_int", "rev_out",
-	"rev_return", "rev_string", "rev_void", "rev_while",
+	"rev_return", "rev_string", "rev_switch","rev_void", "rev_while",
 	// end
 	"max"
 };
 
 static char reserved_table[RESERVED_NUMBER][ID_LEN] = {
-	"break","char","continue","else","extern","for","if",
-	"in","int","out","return","string","void","while"
+	"break","case","char","continue","default","else","extern","for","if",
+	"in","int","out","return","string","switch","void","while"
 };
 static enum symbol reserved_symbol[RESERVED_NUMBER] = {
-	rev_break,rev_char,rev_continue,rev_else,rev_extern,rev_for,
+	rev_break,rev_case,rev_char,rev_continue,rev_default,rev_else,rev_extern,rev_for,
 	rev_if,rev_in,rev_int,rev_out,
-	rev_return,rev_string,rev_void,rev_while
+	rev_return,rev_string,rev_switch,rev_void,rev_while
 };
 
 
@@ -43,17 +43,17 @@ private:
 	char current_char;   // current char
 	char old_char;       // old char
 	int line_number;     // line number
-	char line[MAX_LEN];  // 存储当前行的字符串
-	int position;        // 列号
-	int line_length;     // 当前行的长度
+	char line[MAX_LEN];  // current line string
+	int position;        // col number
+	int line_length;     // line length
 
-	enum symbol sym;     // 符号类型
-	char id[ID_LEN + 1]; // 标识符
-	char str[STRING_LEN];// 字符串
-	char letter;         // 字符
-	int digit;           // 数字
+	enum symbol sym;     // symbol type
+	char id[ID_LEN + 1]; // ident
+	char str[STRING_LEN];// string
+	char letter;         // char
+	int digit;           // number
 
-	FILE* fin;           // 文件标识
+	FILE* fin;           // 
 	bool show_flag;      // 
 	int error_number;    // error number
 

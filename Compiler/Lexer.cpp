@@ -333,6 +333,12 @@ bool Lexer::GetSymbol() {
 				GETCHAR
 				break;
 			}
+			case ':': {
+				sym = colon;
+				if (show_flag) sp(4, ":");
+				GETCHAR
+				break;
+			}
 			case 0: {
 				sym = null;
 				return false;
