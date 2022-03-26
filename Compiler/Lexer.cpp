@@ -32,7 +32,7 @@ bool Lexer::Init(const char* file_name) {
 
 bool Lexer::Getchar() {
 	if (position >= line_length) {
-		// 读入新的一行
+		// read next line
 		position = 0;
 		line_length = 0;
 		line_number++;
@@ -66,8 +66,8 @@ bool Lexer::GetSymbol() {
 	if (current_char >= 'a' && current_char <= 'z' ||
 		current_char >= 'A' && current_char <= 'Z' ||
 		current_char == '_') {
-		int id_count = 0;    // 标识符有效长度
-		int real_length = 0; // 标识符实际长度
+		int id_count = 0;    // valid length
+		int real_length = 0; // actural length
 		bool result = false;
 		do {
 			real_length++;
@@ -409,42 +409,42 @@ void Lexer::sp(int mode,string content) {
 void Lexer::lexical_error(enum error_c code) {
 	Generator::error = true;
 	if (code == warn_escape) {
-		cout << "warning[lexical warning at" << line_number << "] escape failed with \\" << current_char << endl;
+		xWARN("%s%d%s%c%s", "warning[lexical warning at", line_number, "] escape failed with \\", current_char,"\n");
 		return;
 	}
 	error_number++;
-	cout << "[lexical error at " << line_number << "] ";
+	xPANIC("%s%d%s", "[lexical error at ", line_number, "] ");
 	switch (code) {
 		case char_wrong:{
-			cout << "unrecognized char,miss ending '" << endl; 
+			xWARN("%s", "unrecognized char,miss ending '\n");
 			break;
 		}
 		case string_wrong: {
-			cout << "unrecognized string,miss ending \"" << endl;
+			xWARN("%s", "unrecognized string,miss ending \"\n");
 			break;
 		}
 		case annotation_wrong: {
-			cout << "annotation wrong missing ending * or /" << endl;
+			xWARN("%s", "annotation wrong missing ending * or /\n");
 			break;
 		}
 		case line2long: {
-			cout << "line over 80 charactors!" << endl;
+			xWARN("%s", "line over 80 charactors!\n");
 			break;
 		}
 		case str2long: {
-			cout << "string " << str << " is too long(over 255 byte)" << endl;
+			xWARN("%s%s%s", "string ", str, " is too long(over 255 byte)\n");
 			break;
 		}
 		case num2long: {
-			cout << "number " << digit << " is too long(over 999999999)" << endl;
+			xWARN("%s%d%s", "number ", digit, " is too long(over 999999999)\n");
 			break;
 		}
 		case id2long: {
-			cout << "ident " << id << " is too long(over 30 byte)" << endl;
+			xWARN("%s%s%s", "ident ", id, " is too long(over 30 byte)\n");
 			break;
 		}
 		case expec_char: {
-			cout << "Unexpected symbol " << current_char << endl;
+			xWARN("%s%c%s", "Unexpected symbol ", current_char, "\n");
 			break;
 		}
 	}

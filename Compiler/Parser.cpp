@@ -26,7 +26,7 @@ void Parser::Init(const char* file_name) {
 	bool result = lexer.Init(file_name);
 	if (result) {
 		this->file_name = file_name;
-		cout << endl << "Lexer initial successfully!" << endl;
+		xSUCC("%s", "\nLexer initial successfully! ...\n");
 		string output = file_name;
 		int index = output.find_last_of("/");
 		if (index == string::npos) {
@@ -39,16 +39,16 @@ void Parser::Init(const char* file_name) {
 			string output = string(file_name).substr(0, index);
 			result = Generator::Init((output + ".s").c_str());
 			if (result) {
-				cout << "Generator initial successfully!" << endl;
+				xSUCC("%s", "Generator initial successfully!\n");
 				Generator::section("section .text");
 			}
 			else {
-				cout << "Generator initial failed!" << endl;
+				xPANIC("%s", "Generator initial failed!\n");
 				exit(1);
 			}
 		}
 		else {
-			cout << "Generator common file failed!" << endl;
+			xPANIC("%s", "Generator common file failed!\n");
 			exit(1);
 		}
 	}
@@ -90,13 +90,13 @@ void Parser::Program() {
 		if (syntax_error == 0 && lexer.get_error_number() == 0
 			&& !Generator::error) {
 			VarTable::over();
-			cout << "compiler " << file_name << " successfully! " << endl;
+			xSUCC("%s%s%s", "compiler ", file_name.c_str(), " successfully!\n");
 		}
 		else {
-			cout << "compiler " << file_name << " failed!" << endl;
+			xPANIC("%s%s%s", "compiler ", file_name.c_str(), " failed!\n");
 		}
-		cout << "lexical error:" << lexer.get_error_number() << endl;
-		cout << "syntax error:" << syntax_error << endl;
+		xINFO("%s%d%s","lexical error:" , lexer.get_error_number(),"\n");
+		xINFO("%s%d%s", "syntax error:", syntax_error,"\n");
 	}
 	else {
 		Dec();
@@ -1290,137 +1290,138 @@ void Parser::SyntaxError(error_c error_code) {
 	if (lexer.get_error_number() != 0) return;
 	VarTable::syntax_error = true;
 	syntax_error++;
-	cout << "[syntax error at line " << lexer.get_line_number() << "] ";
+	xPANIC("%s%d%s", "[syntax error at line ", lexer.get_line_number(), "] ");
 	switch (error_code)
 	{
 		case semicon_lost: {
-			cout << "semicon(;) lost!" << endl;
+			xWARN("%s","semicon(;) lost!\n");
 			break;
 		}
 		case commma_lost: {
-			cout << "comma(,) lost!" << endl;
+			xWARN("%s", "comma(,) lost!\n");
 			break;
 		} 
 		case type_lost: {
-			cout << "type(var no type) lost!" << endl;
+			xWARN("%s", "type(var no type) lost!\n");
 			break;
 		} 
 		case ident_lost:{
-			cout << "ident name lost!" << endl;
+			xWARN("%s", "ident name lost!\n");
 			break;
 		}
 		case semicon_wrong: {
-			cout << "semicon wrong!" << endl;
+			xWARN("%s", "semicon wrong!\n");
 			break;
-		} case type_wrong: {
-			cout << "type maybe wrong!" << endl;
+		} 
+		case type_wrong: {
+			xWARN("%s", "type maybe wrong!\n");
 			break;
 		} 
 		case statement_wrong: {
-			cout << "not an effective statement" << endl;
+			xWARN("%s", "not an effective statement\n");
 			break;
 		}
 		case lparen_wrong: {
-			cout << "lparen `(` wrong!" << endl;
+			xWARN("%s", "lparen `(` wrong!\n");
 			break;
 		}
 		case para_lost: {
-			cout << "parameter lost!" << endl;
+			xWARN("%s", "parameter lost!\n");
 			break;
 		}
 		case lparen_lost: {
-			cout << "lparen `(` maybe lost!" << endl;
+			xWARN("%s", "lparen `(` maybe lost!\n");
 			break;
 		}
 		case rparen_lost: {
-			cout << "rparen `)` maybe lost!" << endl;
+			xWARN("%s", "rparen `)` maybe lost!\n");
 			break;
 		}
 		case lbrac_lost: {
-			cout << "lbarc `{` maybe lost!" << endl;
+			xWARN("%s", "lbarc `{` maybe lost!\n");
 			break;
 		}
 		case rbrac_lost: {
-			cout << "rbarc `}` maybe lost!" << endl;
+			xWARN("%s", "rbarc `}` maybe lost!\n");
 			break;
 		}
 		case input_wrong: {
-			cout << "input stream (>>) wrong!" << endl;
+			xWARN("%s", "input stream (>>) wrong!\n");
 			break;
 		}
 		case non_input : {
-			cout << "no var be inputed!" << endl;
+			xWARN("%s", "no var be inputed!\n");
 			break;
 		}
 		case output_wrong: {
-			cout << "output stream (>>) wrong!" << endl;
+			xWARN("%s", "output stream (>>) wrong!\n");
 			break;
 		} 
 		case rparen_wrong: {
-			cout << "rparen `)` maybe wrong!" << endl;
+			xWARN("%s", "rparen `)` maybe wrong!\n");
 			break;
 		}
 		case else_lost: {
-			cout << "else (keyword) lost!" << endl;
+			xWARN("%s", "else (keyword) lost!\n");
 			break;
 		}
 		case else_wrong: {
-			cout << "else(keyword) maybe wrong!" << endl;
+			xWARN("%s", "else(keyword) maybe wrong!\n");
 			break;
 		}
 		case return_wrong: {
-			cout << "function return maybe wrong!" << endl;
+			xWARN("%s", "function return maybe wrong!\n");
 			break;
 		}
 		case idtail_lost: {
-			cout << "can't resolve the identifier!" << endl;
+			xWARN("%s", "can't resolve the identifier!\n");
 			break;
 		}
 		case arg_lost: {
-			cout << "args maybe lost!" << endl;
+			xWARN("%s", "args maybe lost!\n");
 			break;
 		}
 		case arg_wrong: {
-			cout << "can't resolve the args!" << endl;
+			xWARN("%s", "can't resolve the args!\n");
 			break;
 		} 
 		case arglist_wrong: {
-			cout << "no right separator in args!" << endl;
+			xWARN("%s", "no right separator in args!\n");
 			break;
 		}
 		case op_lost: {
-			cout << " operator maybe lost!" << endl;
+			xWARN("%s", " operator maybe lost!\n");
 			break;
 		}
 		case op_wrong: {
-			cout << "operator maybe wrong!" << endl;
+			xWARN("%s", "operator maybe wrong!\n");
 			break;
 		} 
 		case expr_lost: {
-			cout << "expression maybe lost!" << endl;
+			xWARN("%s", "expression maybe lost!\n");
 			break;
 		} case expr_wrong: {
-			cout << "not an effective expression" << endl;
+			xWARN("%s", "not an effective expression\n");
 			break;
 		}
 		case continue_non_switch: {
-			cout << "continue can't in switch-case expression!" << endl;
+			xWARN("%s", "continue can't in switch-case expression!\n");
 			break;
 		}
 		case case_lab_error: {
-			cout << "case-lab only be constant number!" << endl;
+			xWARN("%s", "case-lab only be constant number!\n");
 			break;
 		}
 		case case_lab_dup: {
-			cout << "case-lab duplicated!" << endl;
+			xWARN("%s", "case-lab duplicated!\n");
 			break;
 		}
 		case colon_lost: {
-			cout << "colon(:) maybe lost!" << endl;
+			xWARN("%s", "colon(:) maybe lost!\n");
 			break;
 		}
 		case switch_error: {
-			cout << "not an effective case-block in switch statement!" << endl;
+			xWARN("%s", "not an effective case-block in switch statement!\n");
 			break;
 		}
 		default:

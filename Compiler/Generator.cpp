@@ -11,11 +11,11 @@ FILE* Generator::fout = nullptr;
 bool Generator::Init(const char* file_name) {
 	fout = fopen(file_name, "w");
 	if (!fout) {
-		cout << "file [" << file_name << "] open failed!" << endl;
+		xPANIC("%s%s%s", "file [", file_name, "] open failed!\n");
 		return false;
 	}
 	else {
-		cout << "file [" << file_name << "] open successfully!" << endl;
+		xSUCC("%s%s%s", "file [", file_name, "] open successfully!\n");
 		return true;
 	}
 }
@@ -878,7 +878,7 @@ void Generator::GenerateOutput(VarRecord* p, int& var_number, FunRecord& fun) {
 bool Generator::GenerateComm(string output) {
 	fout = fopen(output.c_str(), "w");
 	if (!fout) {
-		cout << "generate common.s failed!" << endl;
+		xPANIC("%s", "generate common.s failed!\n");
 		return false;
 	}
 	else {
@@ -927,7 +927,7 @@ bool Generator::GenerateComm(string output) {
 		other_ass(STACK + string(" times 65536 db 0\n"));
 		label(BASE);
 		fclose(fout);
-		cout << "generate common.s successfully!" << endl;
+		xSUCC("%s", "generate common.s successfully!\n");
 		return true;
 	}
 }
@@ -1146,91 +1146,91 @@ void Generator::GenerateCaseTable(int start,int end,int switch_id,vector<int>&el
 
 void Generator::SemanticError(error_c code, string info) {
 	error = true;
-	cout << "[Semantic error at " << line_number << "] ";
+	xPANIC("%s%d%s", "[Semantic error at ", line_number, "] ");
 	switch (code)
 	{
 		case void_non_calc:{
-			cout << "void type can't calculate!" << endl;
+			xWARN("%s", "void type can't calculate!\n");
 			break;
 		}
 		case str_non_add: {
-			cout << "string type only use add(+) operator!" << endl;
+			xWARN("%s", "string type only use add(+) operator!\n");
 			break;
 		}	
 		case void_non_assi: {
-			cout << "void type can't assign!" << endl;
+			xWARN("%s", "void type can't assign!\n");
 			break;
 		}
 		case type_assi: {
-			cout << "des type not math src type!" << endl;
+			xWARN("%s", "des type not math src type!\n");
 			break;
 		}
 		case void_non_in: {
-			cout << "void type can't output!" << endl;
+			xWARN("%s", "void type can't output!\n");
 			break;
 		}
 		case var_redef: {
-			cout << "variable (" << info << ") redefination!" << endl;
+			xWARN("%s%s%s", "variable (" , info.c_str(), ") redefination!\n");
 			break;
 		} 
 		case var_undef: {
-			cout << "variable (" << info << ") undefination!" << endl;
+			xWARN("%s%s%", "variable (" , info.c_str(), ") undefination!\n");
 			break;
 		}
 		case fun_redef: {
-			cout << "function (" << info << ") redefination!" << endl;
+			xWARN("%s%s%", "function (" , info.c_str(), ") redefination!\n");
 			break;
 		}
 		case fun_def_error: {
-			cout << "function (" << info << ") def error!" << endl;
+			xWARN("%s%s%s", "function (" , info.c_str() , ") def error!\n");
 			break;
 		} 
 		case fun_undef: {
-			cout << "function (" << info << ") undefination!" << endl;
+			xWARN("%s%s%s", "function (" , info.c_str() , ") undefination!\n");
 			break;
 		}
 		case fun_dec_error: {
-			cout << "function declare error!" << endl;
+			xWARN("%s", "function declare error!\n");
 			break;
 		}
 		case real_args_error: {
-			cout << "real parameter type not match args!" << endl;
+			xWARN("%s", "real parameter type not match args!\n");
 			break;
 		}
 		case para_redef: {
-			cout << "parameter (" << info << ") conflict with other variable!" << endl;
+			xWARN("%s%s%s", "parameter (" , info.c_str() , ") conflict with other variable!\n");
 			break;
 		} 
 		case local_redef: {
-			cout << "local var (" << info << ") redefination!" << endl;
+			xWARN("%s%s%s", "local var (" , info.c_str() , ") redefination!\n");
 			break;
 		}
 		case  break_non_in_while: {
-			cout << "break not in while statement!" << endl;
+			xWARN("%s", "break not in while statement!\n");
 			break;
 		} 
 		case continue_non_in_while: {
-			cout << "continue not in while statement!" << endl;
+			xWARN("%s", "continue not in while statement!\n");
 			break;
 		}
 		case str_non_cond: {
-			cout << "string type can't be condition!" << endl;
+			xWARN("%s", "string type can't be condition!\n");
 			break;
 		}
 		case void_non_cond: {
-			cout << "void type can't be condition!" << endl;
+			xWARN("%s", "void type can't be condition!\n");
 			break;
 		} 
 		case ret_type_error: {
-			cout << "return var type not match function return type!" << endl;
+			xWARN("%s", "return var type not match function return type!\n");
 			break;
 		}
 		case null_pointer: {
-			cout << "null pointer with (" << info << ") !" << endl;
+			xWARN("%s%s%s", "null pointer with (" , info.c_str() , ") !\n");
 			exit(0);
 		}
 		default: {
-			cout << "unknowned error" << endl;
+			xWARN("%s", "unknowned error\n");
 			break;
 		}
 	}

@@ -7,17 +7,17 @@
 #define GETCHAR if(!Getchar()) return false;
 
 static char symbol_name[][ID_LEN]{
-	// 空，标识符，异常，数字
+	//
 	"null", "ident", "excep", "number",
-	// 加，减，乘，除，赋值
+	//
 	"add", "sub", "mult", "divi","mod", "assign",
 	// >，>=，<，<=，==，!=
 	"gt", "ge", "lt", "le", "equ", "nequ",
 	// 输入>>，输出<<
 	"input", "output",
-	// 界符，char,string,;,(,),{,}
+	// comma，char,string,;,(,),{,}
 	"comma", "chara", "strings", "semicon", "lparen", "rparen", "lbrac", "rbrac","colon"
-	// 保留字
+	// reserved words
 	"min",
 	"rev_break","rev_case" "rev_char", "rev_continue","rev_default" ,"rev_else", "rev_extern","rev_for",
 	"rev_if", "rev_in", "rev_int", "rev_out",

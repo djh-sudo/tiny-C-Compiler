@@ -6,8 +6,8 @@
 
 using namespace std;
 
-void Usage() {
-	cout << "Usage:jcc src_file1 file2 ..." << endl;
+inline void Usage() {
+	xSUCC("%s", "Usage:jcc src_file1 file2 ...\n");
 }
 
 int main(int argc,char*argv[]) {
@@ -23,7 +23,7 @@ int main(int argc,char*argv[]) {
 		}
 	}
 	else {
-		cout << "Not recognize command " << argv[1] << " ,using jcc " << endl;
+		xWARN("%s%s%s", "Not recognize command ", argv[1], " ,using jcc \n");
 		Usage();
 	}
 

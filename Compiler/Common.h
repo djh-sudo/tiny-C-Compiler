@@ -1,4 +1,6 @@
 #pragma once
+#include <Windows.h>
+#include <cstdio>
 #include <iostream>
 using namespace std;
 
@@ -58,20 +60,61 @@ using namespace std;
 #define CASE_JMP(X,Y)     string("@case_") + X + "_" + Y + "_jmp"
 #define CASE_TABLE(X)     string("@switch_") + X + "_table"
 #define CASE_TABLE_END(X) string("@switch_tab_") + X + "_end"
+
+//
+// aux routines for colorful printf. And you should not pay more attention to them
+//
+#define xINFO(_X_,...)            color_printf(FG_WHITE,_X_,__VA_ARGS__)
+
+#define xPANIC(_X_,...)           color_printf(FG_RED,_X_,__VA_ARGS__)
+
+#define xSUCC(_X_,...)            color_printf(FG_GREEN,_X_,__VA_ARGS__)
+
+#define xWARN(_X_,...)            color_printf(FG_YELLOW,_X_,__VA_ARGS__)
+
+
+#define FG_BLACK               0x00
+#define FG_BLUE                0x01
+#define FG_GREEN               0x02
+#define FG_BLUE_2              0x03
+#define FG_RED                 0x04
+#define FG_PURPLE              0x05
+#define FG_YELLOW              0x06
+#define FG_WHITE               0x0F
+
+inline void setColor(int color, const bool bIntensity = true) {
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color | (bIntensity ? FOREGROUND_INTENSITY : 0));
+}
+
+inline void resetColor() {
+	setColor(FG_WHITE);
+}
+
+inline int color_printf(const int color, const char* pszFmt, ...) {
+	if (color != -1) {
+		setColor(color);
+	}
+	va_list  marker;
+	va_start(marker, pszFmt);
+	auto ri = vprintf(pszFmt, marker);
+	va_end(marker);
+	resetColor();
+	return ri;
+}
+
 // 41
 enum symbol {
-	// 空，标识符，异常，数字
 	null,ident,excep,number,
-	// 加，减，乘，除，赋值
+
 	add,sub,mult,divi,modi,assign,
 	// >，>=，<，<=，==，!=
 	gt,ge,lt,le,equ,nequ,
-	// 输入>>，输出<<
+	// input >>，output <<
 	input,output,
 	// 界符，char,string,;,(,),{,}
 	comma,chara,strings,semicon,lparen,rparen,lbrac,rbrac, colon,
 	min,
-	// 保留字
+	// reserved words
 	rev_break,rev_case,rev_char,rev_continue,rev_default,rev_else,rev_extern,rev_for,
 	rev_if,rev_in,rev_int,rev_out,
 	rev_return,rev_string,rev_switch,rev_void,rev_while,
