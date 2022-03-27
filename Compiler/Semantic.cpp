@@ -477,17 +477,7 @@ VarRecord* VarTable::GenerateCall(string fname, int& var_number, FunRecord& fun)
 						Generator::mov(eax, __ebp(ret->get_local_addr()));
 					}
 					else {
-						if (ret->get_local_addr() == 0) {
-							Generator::mov(eax, __("@var_" + ret->get_name()));
-						}
-						else {
-							if (ret->get_local_addr() < 0) {
-								Generator::mov(eax, __ebp(ret->get_local_addr()));
-							}
-							else {
-								Generator::mov(eax, _ebp(ret->get_local_addr()));
-							}
-						}
+						Generator::LoadVarAddrToReg(ret, eax);
 					}
 					Generator::push(eax);
 				}

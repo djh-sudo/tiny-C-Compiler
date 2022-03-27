@@ -629,7 +629,7 @@ void Generator::GenerateReturn(VarRecord* ret, int& var_number,FunRecord&fun) {
 		}
 		LoadVarAddrToReg(ret, eax);
 	}
-	// 函数结束清理工作
+	// clear
 	mov(ebx, __(EBP));
 	mov(__(ESP), ebx);
 	exchg_esp(ebx);
@@ -1061,7 +1061,6 @@ void Generator::GenerateCaseTable(int start,int end,int switch_id,vector<int>&el
 	else {
 		return;
 	}
-
 }
 
 void Generator::SemanticError(error_c code, string info) {
