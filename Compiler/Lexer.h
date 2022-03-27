@@ -12,7 +12,7 @@ static char symbol_name[][ID_LEN]{
 	//
 	"add", "sub", "mult", "divi","mod", "assign",
 	// >£¬>=£¬<£¬<=£¬==£¬!=
-	"gt", "ge", "lt", "le", "equ", "nequ",
+	"gt", "ge", "lt", "le", "equ", "nequ","logic_and","logic_or",
 	// ÊäÈë>>£¬Êä³ö<<
 	"input", "output",
 	// comma£¬char,string,;,(,),{,}

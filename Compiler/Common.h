@@ -108,7 +108,7 @@ enum symbol {
 
 	add,sub,mult,divi,modi,assign,
 	// >£¬>=£¬<£¬<=£¬==£¬!=
-	gt,ge,lt,le,equ,nequ,
+	gt,ge,lt,le,equ,nequ,l_and,l_or,
 	// input >>£¬output <<
 	input,output,
 	// ½ç·û£¬char,string,;,(,),{,}
@@ -143,7 +143,7 @@ enum error_c {
 	break_non_in_while, continue_non_in_while,
 	str_non_cond, void_non_cond, ret_type_error, null_pointer,
 	continue_non_switch, case_lab_error, case_lab_dup, colon_lost,
-	switch_error,
+	switch_error, error_operator,
 
 
 };

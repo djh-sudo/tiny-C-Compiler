@@ -1,55 +1,14 @@
-string t;
+int Fibonacci(int k){
+	if(k == 1 || k == 0){
+		return 1;
+	}else{
+			return Fibonacci(k - 1) + Fibonacci(k - 2);
+		}
+}
+
 int main(){
-	int a;
-	in >> a ;
-	switch(a){
-		case 100:{
-			for(int i=0;i<20;i=i+1){
-				out << a*a*a + "\n";
-				break;
-			}
-			break;
-		}
-		case 1:{
-			for(int i=0;i<20;i=i+1){
-				out << a*a*a + "\n";
-				break;
-			}
-			break;
-		}
-		case 2:{
-			for(int i=0;i<20;i=i+1){
-				out << a*a*a + "\n";
-				break;
-			}
-			break;
-		}
-		case 10:{
-			for(int i=0;i<20;i=i+1){
-				out << a*a*a + "\n";
-				break;
-			}
-			break;
-		}
-		case 50:{
-			for(int i=0;i<20;i=i+1){
-				out << a*a*a + "\n";
-				break;
-			}
-			break;
-		}
-		case 999:{
-			out << a+"\n";
-			
-		}
-		default:{
-			out<<"this is default!\n";
-			break;
-		}
+	for(int i=1;i<20;i=i+1){
+		out << "fib(" + i + "):" + Fibonacci(i) + "\n";
 	}
-	int g=a;
-	out<<g+"\n";
-	t = "213"+g;
-	out<<t;
 	return 0;
 }

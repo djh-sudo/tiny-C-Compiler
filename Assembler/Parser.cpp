@@ -213,7 +213,7 @@ void Parser::Instruct() {
 	instructure.Init();
 	int len = 0;
 	NextToken();
-	if (token >= rev_mov && token <= rev_lea) {
+	if (token >= rev_mov && token <= rev_or) {
 		symbol op = token;
 		int des_type = 0;
 		int src_type = 0;

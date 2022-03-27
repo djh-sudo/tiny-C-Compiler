@@ -277,6 +277,7 @@ void Generate::Generate0Op(symbol op,bool scan) {
 }
 
 void Generate::Over() {
+	line_number = 0;
 	if (fout) {
 		fclose(fout);
 		fout = nullptr;

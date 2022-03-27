@@ -339,6 +339,24 @@ bool Lexer::GetSymbol() {
 				GETCHAR
 				break;
 			}
+			case '|': {
+				sym = null;
+				GETCHAR
+				if (current_char == '|') {
+					sym = l_or;
+				}
+				GETCHAR
+				break;
+			}
+			case '&': {
+				sym = null;
+				GETCHAR
+				if(current_char == '&'){
+					sym = l_and;
+				}
+				GETCHAR
+				break;
+			}
 			case 0: {
 				sym = null;
 				return false;

@@ -65,6 +65,10 @@ public:
 	static void mov(string des, int src);
 	static void cmp(string des, string src);
 	static void cmp(string des, int src);
+	static void ands(string des, string src);
+	static void ands(string des, int src);
+	static void ors(string des, string src);
+	static void ors(string des, int src);
 	static void je(string des);
 	static void jg(string des);
 	static void jl(string des);
@@ -72,6 +76,7 @@ public:
 	static void jge(string des);
 	static void jne(string des);
 	static void jna(string des);
+	static void jnz(string des);
 	static void jmp(string des);
 	static void neg(string des);
 	static void dec(string des);

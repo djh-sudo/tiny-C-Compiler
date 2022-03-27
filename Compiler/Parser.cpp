@@ -651,7 +651,7 @@ void Parser::WhileState(int& level) {
 	Generator::label(WHILE_LOOP(to_string(temp_id)));
 	int block_addr = Generator::GenerateBlock(-1, fun);
 	int init = 0;
-	VarRecord* condition = Expr(init);
+	VarRecord* condition = OrExpr(init);
 	Generator::GenerateCondition(condition);
 	Generator::je(WHILE_EXIT(to_string(temp_id)));
 
@@ -696,7 +696,7 @@ void Parser::IfState(int& level, int loop_id, int addr) {
 	// gen code
 	int block_addr = Generator::GenerateBlock(-1,fun);
 	int init = 0;
-	VarRecord* condition = Expr(init);
+	VarRecord* condition = OrExpr(init);
 	Generator::GenerateCondition(condition);
 	Generator::je(IF_MIDDLE(to_string(temp_id)));
 	NextToken();
@@ -783,7 +783,7 @@ void Parser::ForCondition(int& init_number, int& level,int addr_end) {
 
 	if (token != semicon) {
 		this->wait = true;
-		VarRecord* condition = Expr(init_number);
+		VarRecord* condition = OrExpr(init_number);
 		Generator::GenerateCondition(condition);
 		Generator::je(FOR_EXIT(to_string(temp_id)));
 		NextToken();
@@ -824,7 +824,6 @@ void Parser::ForEnd(int& init_number, int& level, int loop_id, int addr, int add
 	Generator::GenerateBlock(addr_end, fun);//
 	return;
 }
-
 
 void Parser::SwitchState(int& level) {
 	switch_id++;
@@ -967,7 +966,6 @@ void Parser::CaseHandle(VarRecord* var) {
 		}
 	}
 }
-
 
 void Parser::ReturnState(int& var_number, int& level) {
 	ReturnTail(var_number, level);
@@ -1121,6 +1119,29 @@ void Parser::RealArgsList(int& var_number) {
 	}
 }
 
+VarRecord* Parser::OrExpr(int& var_number) {
+	VarRecord* factor1 = Expr(var_number);
+	VarRecord* factor2 = OrExprTail(factor1, var_number);
+	if (factor2 == nullptr)
+		return factor1;
+	else
+		return factor2;
+}
+
+VarRecord* Parser::OrExprTail(VarRecord* factor, int& var_number) {
+	NextToken();
+	if (token == l_and || token == l_or) {
+		symbol op = token;
+		VarRecord* factor2 = Expr(var_number);
+		return Generator::GenerateExp(factor, op, factor2, var_number, fun);
+	}
+	else {
+		// todo
+		this->wait = true;
+		return nullptr;
+	}
+}
+
 VarRecord* Parser::Expr(int& var_number) {
 	VarRecord* factor1 = OneExpr(var_number);
 	VarRecord* factor2 = ExprTail(factor1, var_number);
@@ -1149,8 +1170,8 @@ VarRecord* Parser::ExprTail(VarRecord* factor, int& var_number) {
 	else if (token == semicon || token == comma || token == rparen ||
 		token == rbrac || token == rev_return || token == rev_break ||
 		token == rev_continue || token == rev_in || token == rev_out ||
-		token == rev_int || token == rev_char || token == strings ||
-		token == rev_void) {
+		token == rev_int || token == rev_char || token == rev_string ||
+		token == rev_void|| token ==l_and || token == l_or) {
 		this->wait = true;
 		return nullptr;
 	}

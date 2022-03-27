@@ -60,7 +60,8 @@ VarRecord* Generator::GenerateExp(VarRecord* f1, symbol op, VarRecord* f2, int& 
 	}
 	else {
 		if (op == gt || op == ge || op == lt ||
-			op == le || op == equ || op == nequ) {
+			op == le || op == equ || op == nequ || 
+			op == l_and||op == l_or) {
 			ret_type = rev_char;
 		}
 	}
@@ -434,6 +435,7 @@ VarRecord* Generator::GenerateExp(VarRecord* f1, symbol op, VarRecord* f2, int& 
 				}
 				default: {
 					// assert
+					SemanticError(error_operator);
 				}
 				break;
 			}
@@ -444,7 +446,7 @@ VarRecord* Generator::GenerateExp(VarRecord* f1, symbol op, VarRecord* f2, int& 
 			if (f1->get_type() == rev_string) {
 				// semantic error
 			}
-			else {
+			else if(op != l_and && op != l_or){
 				lab_loop = GenerateName("lab", null, "base_cmp");
 				lab_exit = GenerateName("lab", null, "base_cmp_exit");
 				LoadVarAddrToReg(f1,eax);
@@ -477,8 +479,29 @@ VarRecord* Generator::GenerateExp(VarRecord* f1, symbol op, VarRecord* f2, int& 
 					}
 					default: {
 						// assert
+
 						break;
 					}
+				}
+				mov(eax, 0);
+				jmp(lab_exit);
+				label(lab_loop);
+				mov(eax, 1);
+				label(lab_exit);
+				mov(__ebp(tmp->get_local_addr()), eax);
+			}
+			else {
+				lab_loop = GenerateName("lab", null, "base_cmp");
+				lab_exit = GenerateName("lab", null, "base_cmp_exit");
+				LoadVarAddrToReg(f1, eax);
+				LoadVarAddrToReg(f2, ebx);
+				if (op == l_and) {
+					ands(eax, ebx);
+					jne(lab_loop);
+				}
+				else {
+					ors(eax,ebx);
+					jne(lab_loop);
 				}
 				mov(eax, 0);
 				jmp(lab_exit);
@@ -843,6 +866,23 @@ void Generator::cmp(string des, int src) {
 	fprintf(fout, ("\tcmp " + des + "," + to_string(src) + "\n").c_str());
 }
 
+void Generator::ands(string des, string src) {
+	fprintf(fout, ("\tand " + des + "," + src + "\n").c_str());
+}
+
+void Generator::ands(string des, int src) {
+	fprintf(fout, ("\tand " + des + "," + to_string(src) + "\n").c_str());
+}
+
+
+void Generator::ors(string des, string src) {
+	fprintf(fout, ("\tor " + des + "," + src + "\n").c_str());
+}
+
+void Generator::ors(string des, int src) {
+	fprintf(fout, ("\tor " + des + "," + to_string(src) + "\n").c_str());
+}
+
 void Generator::je(string des){
 	fprintf(fout, ("\tje " + des + "\n").c_str());
 }
@@ -871,6 +911,9 @@ void Generator::jna(string des){
 	fprintf(fout, ("\tjna " + des + "\n").c_str());
 }
 
+void Generator::jnz(string des) {
+	fprintf(fout, ("\tjnz " + des + "\n").c_str());
+}
 void Generator::jmp(string des) {
 	fprintf(fout, ("\tjmp " + des + "\n").c_str());
 }
@@ -1106,12 +1149,15 @@ void Generator::SemanticError(error_c code, string info) {
 			xWARN("%s%s%s", "null pointer with (" , info.c_str() , ") !\n");
 			exit(0);
 		}
+		case error_operator: {
+			xWARN("%s", "operator is not defined!\n");
+			break;
+		}
 		default: {
 			xWARN("%s", "unknowned error\n");
 			break;
 		}
 	}
-	exit(1);
 }
 
 void Generator::over() {

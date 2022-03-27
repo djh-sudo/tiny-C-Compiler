@@ -57,12 +57,16 @@ public:
 
 	void SwitchState(int& level);
 	void CaseState(int& level, int& init_number, int addr, VarRecord* var);
+
 	void CaseHandle(VarRecord* var);
 	void ReturnState(int& var_number, int& level);
 	void ReturnTail(int& var_number, int& level);
 	VarRecord* IdentTail(string name, int& var_number);
 	void RealArgs(string name, int& var_number);
 	void RealArgsList(int& var_number);
+	
+	VarRecord* OrExpr(int& var_number);
+	VarRecord* OrExprTail(VarRecord* factor, int& var_number);
 	VarRecord* Expr(int& var_number);
 	VarRecord* ExprTail(VarRecord* factor, int& var_number);
 	VarRecord* OneExpr(int& var_number);

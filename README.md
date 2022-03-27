@@ -53,15 +53,11 @@ running env: linux(Ubuntu-i386)
 
 ```c
 int Fibonacci(int k){
-	if(k == 1){
+	if(k == 1 || k == 0){
 		return 1;
 	}else{
-		if(k == 0){
-			return 0;
-		}else{
 			return Fibonacci(k - 1) + Fibonacci(k - 2);
 		}
-	}
 }
 
 int main(){
@@ -95,12 +91,22 @@ chmod 777 ./test_dir2/fib.out
 
 # END
 
-`updating`中，一些简单的`C`语言的语法特性暂时不支持，例如:
+更新中，目前支持与不支持的语法:
+
+- [ ] `struct`
+- [ ] `*`(`pointer`)
+- [ ] `i += 1` `i -= 1` ...
+- [ ] `i++` `i--`
+- [ ] `enum`
+- [ ] `do-while`
+- [x] `while`
+- [x] `for`
+- [x] `if-else`
+- [x] `condition`
+- [x] `&&` `||`
 
 ```bash
 i++; # 暂时不支持自增和自减
-|| && # 暂时不支持逻辑运算
-# else{}不可以缺省
 i += 1 # 暂不支持所有的这类表达式
 ```
 

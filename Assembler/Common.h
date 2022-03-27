@@ -6,7 +6,7 @@
 #define MAX_LEN 80
 #define ID_LEN 30
 #define STRING_LEN 255
-#define RESERVED_NUMBER 46
+#define RESERVED_NUMBER 48
 #define NUM_LENGTH 9
 
 #define al "al"
@@ -59,6 +59,9 @@
 #define db "db"
 #define dw "dw"
 #define dd "dd"
+#define land "and"
+#define lor  "or"
+
 
 #define IMMD 1
 #define REGS 2
@@ -93,7 +96,7 @@ enum symbol {
 	rev_ah, rev_ch, rev_dh, rev_bh,
 	rev_eax, rev_ecx, rev_edx, rev_ebx,
 	rev_esp, rev_ebp, rev_esi, rev_edi,
-	rev_mov, rev_cmp, rev_sub, rev_add, rev_lea,
+	rev_mov, rev_cmp, rev_sub, rev_add, rev_lea,rev_and,rev_or,
 	rev_call, rev_sys_int, rev_imul, rev_idiv,
 	rev_neg, rev_inc, rev_dec, rev_jmp,
 	rev_je, rev_jg, rev_jl, rev_jge,
