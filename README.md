@@ -104,6 +104,7 @@ chmod 777 ./test_dir2/fib.out
 - [x] `if-else`
 - [x] `condition`
 - [x] `&&` `||`
+- [x] `switch-case`
 
 ```bash
 i++; # 暂时不支持自增和自减
