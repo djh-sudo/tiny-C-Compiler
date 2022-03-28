@@ -57,7 +57,7 @@ private:
 	Elf_File* start;
 public:
 	vector<Elf_File*>files;
-	unordered_map < string, SegList*>seg_list;
+	unordered_map <string, SegList*>seg_list;
 	vector<SymLink*>all_sym;
 	vector<SymLink*>sym_def;
 public:

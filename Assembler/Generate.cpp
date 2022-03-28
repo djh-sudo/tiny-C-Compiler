@@ -107,6 +107,7 @@ void Generate::Generate2Op(symbol op, int des, int src, int len, Inst instructur
 	unsigned char ex_char;
 	switch (instructure.mod_rm.get_mod()) {
 		case -1: {
+			// op [reg],imm
 			switch (op) {
 				case rev_mov: {
 					op_code += (unsigned char)(instructure.mod_rm.get_reg());
@@ -142,6 +143,7 @@ void Generate::Generate2Op(symbol op, int des, int src, int len, Inst instructur
 		case 0: {
 			WriteBytes(op_code, 1, scan);
 			WriteModRM(instructure.mod_rm, scan);
+			// op reg,[disp] | op [disp], reg
 			if (instructure.mod_rm.get_rm() == 5) {
 				HandleRelocation(R_386_32,scan,rel,cur_seg);
 				instructure.WriteDisp(scan);
@@ -152,6 +154,7 @@ void Generate::Generate2Op(symbol op, int des, int src, int len, Inst instructur
 			break;
 		}
 		case 1: {
+			// op [reg + disp8],reg | op reg [reg + disp8]
 			WriteBytes(op_code, 1, scan);
 			WriteModRM(instructure.mod_rm, scan);
 			if (instructure.mod_rm.get_rm() == 4)
@@ -160,6 +163,7 @@ void Generate::Generate2Op(symbol op, int des, int src, int len, Inst instructur
 			break;
 		}
 		case 2: {
+			// op reg [reg + disp32] | op [reg + disp32],reg
 			WriteBytes(op_code, 1, scan);
 			WriteModRM(instructure.mod_rm, scan);
 			if (instructure.mod_rm.get_rm() == 4)
@@ -168,6 +172,7 @@ void Generate::Generate2Op(symbol op, int des, int src, int len, Inst instructur
 			break;
 		}
 		case 3: {
+			// op reg,reg
 			WriteBytes(op_code, 1, scan);
 			WriteModRM(instructure.mod_rm, scan);
 			break;

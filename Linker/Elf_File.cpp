@@ -127,7 +127,7 @@ void Elf_File::ReadElf(const char* file_name) {
 		fp = nullptr;
 	}
 	else {
-		cout << "file " << file_name << " not exit!" << endl;
+		xPANIC("%s%s%s", "file ", file_name, " not exit!\n");
 		exit(0);
 	}
 }
@@ -142,7 +142,7 @@ void Elf_File::GetData(char* buffer, Elf32_Off offset, Elf32_Word size) {
 		fp = nullptr;
 	}
 	else {
-		cout << "file " << file_name << " not exist!" << endl;
+		xPANIC("%s%s%s", "file ", file_name, " not exit!\n");
 		exit(0);
 	}
 }

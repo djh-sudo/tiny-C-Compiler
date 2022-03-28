@@ -283,7 +283,7 @@ void Link::AssemblyObj() {
 	int cur_offset = sizeof(Elf32_Ehdr) + sizeof(Elf32_Phdr) * seg_name.size();
 	obj.AddShdr("", 0, 0, 0, 0, 0, 0, 0, 0, 0);
 	int shstr_tab_size = 26;
-	/* SH_STR_SEG + SYM_;SEG + STR_SRG + 3 */
+	/* SH_STR_SEG + SYM_SEG + STR_SRG + 3 */
 	for (int i = 0; i < seg_name.size(); i++) {
 		string name = seg_name[i];
 		shstr_tab_size += (name.size() + 1);
